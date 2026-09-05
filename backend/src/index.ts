@@ -1,8 +1,9 @@
 import express from 'express';
+import { config } from './config';
 import healthRoutes from './routes/health.routes';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.server.port;
 
 app.use(express.json());
 
