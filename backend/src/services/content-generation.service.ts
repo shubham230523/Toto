@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { config } from '../config';
+import { safetyValidatorService } from './safety-validator.service';
 import { localStorageService } from './local-storage.service';
 import { geminiService } from './gemini.service';
 import { assetResolver } from './asset-resolver.service';
@@ -39,6 +40,15 @@ export class ContentGenerationService {
 
     // 3. Story Validation
     validateGeneratedStory(storyData, characterNames);
+
+    // 3.5 Content Safety Check
+    const safetyResult = await safetyValidatorService.validateContent(storyData);
+    if (!safetyResult.isSafe) {
+      console.warn(`[ContentGeneration]: Content rejected by safety validator: ${safetyResult.reason}`);
+      await episodeRepository.update(episodeRecord.id, { status: EpisodeStatus.FAILED });
+      throw new AppError(`Content safety violation: ${safetyResult.reason}`, 422);
+    }
+
     const story = await storyRepository.create(storyData);
 
     // Update episode title
