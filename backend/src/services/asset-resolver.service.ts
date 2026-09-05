@@ -60,6 +60,11 @@ export class AssetResolver {
         case AssetType.OBJECT:
           generatedAsset = await assetGeneratorService.generateObject(requirement.name);
           break;
+        case AssetType.AUDIO:
+          const text = requirement.metadata?.text || requirement.name;
+          const voice = requirement.metadata?.voice;
+          generatedAsset = await assetGeneratorService.generateSpeech(requirement.name, text, voice);
+          break;
         default:
           return { found: false, generated: false, requirement };
       }

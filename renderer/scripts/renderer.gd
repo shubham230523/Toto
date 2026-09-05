@@ -80,11 +80,13 @@ func rotate_target(target_name: String, target_degrees: float, duration: float) 
 		push_error("Target not found for ROTATE: " + target_name)
 
 ## PLAY_SOUND command: Plays an audio asset.
-func play_sound(sound_name: String) -> void:
+func play_sound(sound_name: String, wait_until_finished: bool = false) -> void:
 	var stream = _resource_registry.get(sound_name)
 	if stream and stream is AudioStream:
 		audio_player.stream = stream
 		audio_player.play()
+		if wait_until_finished:
+			await audio_player.finished
 	else:
 		push_error("Audio resource not found or invalid: " + sound_name)
 
@@ -137,7 +139,13 @@ func execute_action(action: Dictionary) -> void:
 		"PLAY_SOUND":
 			var params = action.get("params", {})
 			var sound_name = params.get("sound", target)
-			play_sound(sound_name)
+			var wait = params.get("wait", false)
+			await play_sound(sound_name, wait)
+		"SPEAK":
+			var params = action.get("params", {})
+			var sound_name = params.get("sound", target)
+			# SPEAK usually implies waiting for the character to finish talking
+			await play_sound(sound_name, true)
 		_:
 			push_warning("Unsupported action type: " + type)
 

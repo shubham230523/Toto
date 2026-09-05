@@ -5,6 +5,7 @@ export interface RequiredAsset {
   name: string;
   type: AssetType;
   url?: string; // Resolved URL
+  metadata?: Record<string, any>;
 }
 
 /**

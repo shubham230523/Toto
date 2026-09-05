@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs/promises';
 import { hostedImageService } from './hosted-image.service';
+import { hostedTTSService } from './hosted-tts.service';
 import { localStorageService } from './local-storage.service';
 import { assetRepository } from '../repositories/asset.repository';
 import { Asset, AssetType } from '../models/asset.model';
@@ -132,6 +133,22 @@ export class AssetGeneratorService {
       type: AssetType.OBJECT,
       url: publicUrl,
       metadata: { generated_prompt: imagePrompt, object_type: name.toLowerCase() },
+    });
+  }
+
+  /**
+   * Generates a speech audio asset.
+   */
+  async generateSpeech(name: string, text: string, voice?: string): Promise<Asset> {
+    const audioBuffer = await hostedTTSService.generateSpeech(text, voice);
+    const fileName = `audio_${name.toLowerCase()}.mp3`;
+    const publicUrl = await localStorageService.saveFile(audioBuffer, fileName, 'audio');
+
+    return assetRepository.create({
+      name,
+      type: AssetType.AUDIO,
+      url: publicUrl,
+      metadata: { text, voice },
     });
   }
 }

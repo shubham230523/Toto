@@ -67,7 +67,11 @@ Total Duration: ${story.estimatedDuration} seconds
   "title": "${story.title}",
   "learningConcept": "${story.learningConcept}",
   "requiredAssets": [
-    { "name": "asset_name", "type": "character|background|object|expression|audio" }
+    {
+      "name": "asset_name",
+      "type": "character|background|object|expression|audio",
+      "metadata": { "text": "For audio assets, include the full text to be spoken here" }
+    }
   ],
   "scenes": [
     {

@@ -22,6 +22,11 @@ export const config = {
       apiKey: process.env.IMAGE_PROVIDER_API_KEY || '',
       model: process.env.IMAGE_MODEL || 'stabilityai/stable-diffusion-xl-base-1.0',
     },
+    ttsProvider: {
+      apiKey: process.env.TTS_API_KEY || '',
+      url: process.env.TTS_URL || '',
+      model: process.env.TTS_MODEL || '',
+    },
   },
   renderService: {
     url: process.env.RENDER_SERVICE_URL || 'http://localhost:3001',

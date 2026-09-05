@@ -33,6 +33,10 @@ func load_audio(file_path: String) -> AudioStream:
 		return stream
 	elif file_path.ends_with(".ogg"):
 		return AudioStreamOggVorbis.load_from_buffer(buffer)
+	elif file_path.ends_with(".mp3"):
+		var stream = AudioStreamMP3.new()
+		stream.data = buffer
+		return stream
 
 	push_error("Unsupported audio format: " + file_path)
 	return null
