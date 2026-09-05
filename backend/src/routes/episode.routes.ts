@@ -92,4 +92,32 @@ router.get('/episodes/:id', async (req: Request, res: Response, next: NextFuncti
   }
 });
 
+/**
+ * PATCH /episodes/:id
+ * Updates an episode's status or details.
+ */
+router.patch('/episodes/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { status, video_url, duration } = req.body;
+
+    const episode = await episodeRepository.update(id as string, {
+      status,
+      video_url,
+      duration,
+    });
+
+    if (!episode) {
+      return next(new AppError('Episode not found', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: { episode },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

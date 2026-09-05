@@ -49,5 +49,10 @@ backend/node_modules/
 backend/dist/
 backend/.env
 
+# Render Service related
+render-service/node_modules/
+render-service/dist/
+render-service/.env
+
 # Widget Preview related
 .widget_preview/

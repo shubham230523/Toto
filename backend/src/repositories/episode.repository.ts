@@ -42,6 +42,18 @@ export class EpisodeRepository {
   }
 
   /**
+   * Updates an existing episode.
+   */
+  async update(id: string, data: Partial<Episode>): Promise<Episode | null> {
+    const [episode] = await db(this.tableName)
+      .where({ id })
+      .update(data)
+      .returning('*');
+
+    return episode || null;
+  }
+
+  /**
    * Gets a random episode with 'ready' status.
    */
   async getRandomReady(): Promise<Episode | null> {
