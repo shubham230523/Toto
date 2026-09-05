@@ -22,6 +22,10 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> {
   bool _isFinished = false;
   String? _errorMessage;
 
+  // Recently played tracking
+  final List<String> _recentlyPlayed = [];
+  static const int _maxRecentlyPlayed = 10;
+
   // Prefetch state
   Episode? _prefetchedEpisode;
   File? _prefetchedVideoFile;
@@ -59,7 +63,7 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> {
       } else {
         // 2. Try to fetch fresh metadata from API
         try {
-          episode = await _apiService.getRandomEpisode().timeout(const Duration(seconds: 10));
+          episode = await _apiService.getRandomEpisode(excludeIds: _recentlyPlayed).timeout(const Duration(seconds: 10));
           if (episode != null) {
             videoFile = await videoCacheService.getCachedVideo(episode.videoUrl)
                 .timeout(const Duration(minutes: 2));
@@ -90,6 +94,13 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          // Track recently played
+          if (episode != null) {
+            _recentlyPlayed.add(episode.id);
+            if (_recentlyPlayed.length > _maxRecentlyPlayed) {
+              _recentlyPlayed.removeAt(0);
+            }
+          }
         });
         _playbackService.play();
         
@@ -122,7 +133,7 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> {
     debugPrint('Started prefetching next episode...');
 
     try {
-      final nextEpisode = await _apiService.getRandomEpisode();
+      final nextEpisode = await _apiService.getRandomEpisode(excludeIds: _recentlyPlayed);
       if (nextEpisode != null) {
         final nextFile = await videoCacheService.getCachedVideo(nextEpisode.videoUrl)
             .timeout(const Duration(minutes: 3));

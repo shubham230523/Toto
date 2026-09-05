@@ -7,10 +7,12 @@ class ApiService {
   final String _baseUrl = AppConstants.apiBaseUrl;
 
   /// Fetches a random ready episode from the backend with a timeout.
-  Future<Episode?> getRandomEpisode() async {
+  /// [excludeIds] Optional list of episode IDs to avoid.
+  Future<Episode?> getRandomEpisode({List<String> excludeIds = const []}) async {
     try {
+      final queryParams = excludeIds.isNotEmpty ? '?exclude=\${excludeIds.join(',')}' : '';
       final response = await http.get(
-        Uri.parse('$_baseUrl/episodes/random'),
+        Uri.parse('\$_baseUrl/episodes/random\$queryParams'),
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {

@@ -1,5 +1,6 @@
 import { db } from '../config/database';
 import { Episode, EpisodeStatus, CreateEpisodeDto } from '../models/episode.model';
+import { characterRepository } from './character.repository';
 
 export class EpisodeRepository {
   private readonly tableName = 'episodes';
@@ -54,15 +55,53 @@ export class EpisodeRepository {
   }
 
   /**
-   * Gets a random episode with 'ready' status.
+   * Gets a random episode with 'ready' status, weighted by character participation.
+   * @param excludeIds Optional list of episode IDs to exclude from selection.
    */
-  async getRandomReady(): Promise<Episode | null> {
-    const episode = await db(this.tableName)
-      .where({ status: EpisodeStatus.READY })
-      .orderByRaw('RANDOM()')
-      .first();
+  async getRandomReady(excludeIds: string[] = []): Promise<Episode | null> {
+    // 1. Fetch all eligible ready episodes
+    let query = db(this.tableName).where({ status: EpisodeStatus.READY });
+    if (excludeIds.length > 0) {
+      query = query.whereNotIn('id', excludeIds);
+    }
 
-    return episode || null;
+    let episodes = await query;
+
+    // 2. Fallback if exclusion resulted in no episodes
+    if (episodes.length === 0 && excludeIds.length > 0) {
+      episodes = await db(this.tableName).where({ status: EpisodeStatus.READY });
+    }
+
+    if (episodes.length === 0) return null;
+
+    // 3. Perform Weighted Selection
+    const characterWeights = await characterRepository.getNameWeightMap();
+
+    // Calculate total weights for each episode
+    const episodeWeights = episodes.map(ep => {
+      let weight = 0;
+      // ep.characters is a JSONB array of strings
+      // Note: Knex/PG might return it as a string or an object depending on driver/setup
+      const names = typeof ep.characters === 'string' ? JSON.parse(ep.characters) : ep.characters;
+      const namesList = Array.isArray(names) ? names : [];
+
+      for (const name of namesList) {
+        weight += characterWeights[name] || 10; // default weight 10
+      }
+      return Math.max(weight, 1);
+    });
+
+    const totalWeight = episodeWeights.reduce((a, b) => a + b, 0);
+    let random = Math.random() * totalWeight;
+
+    for (let i = 0; i < episodes.length; i++) {
+      random -= episodeWeights[i];
+      if (random <= 0) {
+        return episodes[i];
+      }
+    }
+
+    return episodes[0];
   }
 }
 

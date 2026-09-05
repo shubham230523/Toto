@@ -4,6 +4,7 @@ export interface Character {
   species: string;
   personality: string;
   appearance: string;
+  weight: number;
   metadata: Record<string, any>;
   created_at: Date;
 }
@@ -13,5 +14,6 @@ export interface CreateCharacterDto {
   species: string;
   personality: string;
   appearance: string;
+  weight?: number;
   metadata?: Record<string, any>;
 }

@@ -59,7 +59,10 @@ router.get('/episodes/ready', async (req: Request, res: Response, next: NextFunc
 
 router.get('/episodes/random', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const episode = await episodeRepository.getRandomReady();
+    const { exclude } = req.query;
+    const excludeIds = typeof exclude === 'string' ? exclude.split(',') : [];
+
+    const episode = await episodeRepository.getRandomReady(excludeIds);
 
     if (!episode) {
       return next(new AppError('No ready episodes available', 404));

@@ -34,6 +34,17 @@ export class CharacterRepository {
   async listAll(): Promise<Character[]> {
     return db(this.tableName).orderBy('name', 'asc');
   }
+
+  /**
+   * Returns a map of character names to their weights.
+   */
+  async getNameWeightMap(): Promise<Record<string, number>> {
+    const weights = await db(this.tableName).select('name', 'weight');
+    return weights.reduce((acc, curr) => {
+      acc[curr.name] = curr.weight;
+      return acc;
+    }, {} as Record<string, number>);
+  }
 }
 
 export const characterRepository = new CharacterRepository();
