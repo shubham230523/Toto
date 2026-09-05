@@ -28,29 +28,36 @@ func load_from_file(file_path: String) -> Dictionary:
 
 	return {}
 
-## Validates the required fields of an episode definition.
+## Validates the required fields of an episode package.
 func validate(data: Dictionary) -> bool:
-	# 1. Metadata
-	if not data.has("title") or typeof(data["title"]) != TYPE_STRING:
-		push_error("Validation failed: 'title' is missing or not a string")
+	# 1. Episode Package Structure
+	if not data.has("episode") or not data.has("storyboard"):
+		push_error("Validation failed: 'episode' or 'storyboard' root objects are missing")
 		return false
 
-	# 2. Assets
-	if not data.has("requiredAssets") or typeof(data["requiredAssets"]) != TYPE_ARRAY:
-		push_error("Validation failed: 'requiredAssets' is missing or not an array")
+	var storyboard = data["storyboard"]
+
+	# 2. Storyboard Metadata
+	if not storyboard.has("title") or typeof(storyboard["title"]) != TYPE_STRING:
+		push_error("Validation failed: storyboard 'title' is missing or not a string")
 		return false
 
-	# 3. Scenes
-	if not data.has("scenes") or typeof(data["scenes"]) != TYPE_ARRAY:
-		push_error("Validation failed: 'scenes' is missing or not an array")
+	# 3. Assets
+	if not storyboard.has("requiredAssets") or typeof(storyboard["requiredAssets"]) != TYPE_ARRAY:
+		push_error("Validation failed: storyboard 'requiredAssets' is missing or not an array")
 		return false
 
-	if data["scenes"].size() == 0:
+	# 4. Scenes
+	if not storyboard.has("scenes") or typeof(storyboard["scenes"]) != TYPE_ARRAY:
+		push_error("Validation failed: storyboard 'scenes' is missing or not an array")
+		return false
+
+	if storyboard["scenes"].size() == 0:
 		push_error("Validation failed: 'scenes' array is empty")
 		return false
 
-	for i in range(data["scenes"].size()):
-		var scene = data["scenes"][i]
+	for i in range(storyboard["scenes"].size()):
+		var scene = storyboard["scenes"][i]
 		if typeof(scene) != TYPE_DICTIONARY:
 			push_error("Validation failed: Scene at index %d is not a dictionary" % i)
 			return false

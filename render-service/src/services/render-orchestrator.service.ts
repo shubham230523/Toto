@@ -93,14 +93,24 @@ export class RenderOrchestratorService {
 
             console.log(`[RenderOrchestrator]: Job ${jobId} COMPLETED and backend notified.`);
           } else {
+            const errorMsg = renderResult?.error || `Process exited with code ${code}`;
             jobRepository.update(jobId, {
               status: JobStatus.FAILED,
-              error: renderResult?.error || `Process exited with code ${code}`
+              error: errorMsg
             });
+
+            // Notify backend of failure
+            await axios.patch(`${config.backend.apiUrl}/episodes/${episodeId}`, {
+              status: 'failed'
+            }).catch(e => console.error(`[RenderOrchestrator]: Failed to notify backend of job failure`, e.message));
           }
         } catch (error: any) {
           console.error(`[RenderOrchestrator]: Post-render failure for job ${jobId}`, error.message);
           jobRepository.update(jobId, { status: JobStatus.FAILED, error: error.message });
+
+          await axios.patch(`${config.backend.apiUrl}/episodes/${episodeId}`, {
+            status: 'failed'
+          }).catch(e => {});
         } finally {
           // Cleanup temp file
           try {
@@ -112,6 +122,10 @@ export class RenderOrchestratorService {
     } catch (error: any) {
       console.error(`[RenderOrchestrator]: Failed to initiate job ${jobId}`, error.message);
       jobRepository.update(jobId, { status: JobStatus.FAILED, error: error.message });
+
+      await axios.patch(`${config.backend.apiUrl}/episodes/${episodeId}`, {
+        status: 'failed'
+      }).catch(e => {});
     }
   }
 }

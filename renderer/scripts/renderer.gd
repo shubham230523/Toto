@@ -229,13 +229,18 @@ func _clear_registry() -> void:
 	for child in objects_container.get_children():
 		child.queue_free()
 
-## Loads and plays an entire episode. Returns total duration.
-func play_episode(data: Dictionary) -> float:
-	print("[renderer]: Playing episode: ", data.get("title", "Untitled"))
+## Loads and plays an entire episode from a package. Returns total duration.
+func play_episode(package: Dictionary) -> float:
+	var storyboard = package.get("storyboard", {})
+	print("[renderer]: Playing episode: ", storyboard.get("title", "Untitled"))
+
+	# 1. Pre-load Assets from manifest
+	await _preload_assets(storyboard.get("requiredAssets", []))
+
 	var total_duration = 0.0
 
-	# Loop through scenes
-	for scene in data.get("scenes", []):
+	# 2. Loop through scenes
+	for scene in storyboard.get("scenes", []):
 		await setup_scene(scene)
 		await execute_sequence(scene.get("actions", []))
 		total_duration += scene.get("duration", 0.0)
@@ -243,6 +248,27 @@ func play_episode(data: Dictionary) -> float:
 	print("[renderer]: Episode complete.")
 	episode_finished.emit()
 	return total_duration
+
+## Pre-loads all required textures and audio into the resource registry.
+func _preload_assets(assets: Array) -> void:
+	for asset_req in assets:
+		var name = asset_req.get("name", "")
+		var url = asset_req.get("url", "")
+		var type = asset_req.get("type", "")
+
+		if url == "" or name == "": continue
+
+		# In a real setup, we might download the file from the URL first.
+		# For this local prototype, if it's a relative path starting with 'uploads/',
+		# we map it to our backend's uploads directory.
+		var local_path = url.replace("http://localhost:3000/uploads", "../../backend/uploads")
+
+		if type == "audio":
+			var audio = AssetLoader.load_audio(local_path)
+			if audio: register_resource(name, audio)
+		else:
+			var tex = AssetLoader.load_texture(local_path)
+			if tex: register_resource(name, tex)
 
 func _output_result(status: String, duration: float = 0.0, error_msg: String = "") -> void:
 	var result = {

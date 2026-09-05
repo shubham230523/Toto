@@ -4,6 +4,7 @@ import { AssetType } from './asset.model';
 export interface RequiredAsset {
   name: string;
   type: AssetType;
+  url?: string; // Resolved URL
 }
 
 /**

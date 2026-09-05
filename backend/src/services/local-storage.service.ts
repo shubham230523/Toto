@@ -23,20 +23,26 @@ export class LocalStorageService implements IImageStorageService {
   }
 
   async uploadImage(data: Buffer | string, fileName: string, folder: string = ''): Promise<string> {
+    const buffer = typeof data === 'string' ? Buffer.from(data.split(',')[1] || data, 'base64') : data;
+    return this.saveFile(buffer, fileName, folder);
+  }
+
+  /**
+   * Saves a buffer to a file in the storage directory.
+   */
+  async saveFile(data: Buffer, fileName: string, folder: string = ''): Promise<string> {
     try {
       const targetDir = path.join(this.uploadDir, folder);
       await fs.mkdir(targetDir, { recursive: true });
 
       const filePath = path.join(targetDir, fileName);
-      const buffer = typeof data === 'string' ? Buffer.from(data.split(',')[1] || data, 'base64') : data;
-
-      await fs.writeFile(filePath, buffer);
+      await fs.writeFile(filePath, data);
 
       const relativePath = path.join(folder, fileName).replace(/\\/g, '/');
       return this.getStorageUrl(relativePath);
     } catch (error: any) {
-      console.error('[LocalStorageService]: Upload error', error);
-      throw new AppError(`Failed to upload image: ${error.message}`, 500);
+      console.error('[LocalStorageService]: Save file error', error);
+      throw new AppError(`Failed to save file: ${error.message}`, 500);
     }
   }
 

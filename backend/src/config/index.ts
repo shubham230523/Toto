@@ -23,4 +23,7 @@ export const config = {
       model: process.env.IMAGE_MODEL || 'stabilityai/stable-diffusion-xl-base-1.0',
     },
   },
+  renderService: {
+    url: process.env.RENDER_SERVICE_URL || 'http://localhost:3001',
+  },
 };

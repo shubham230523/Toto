@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { geminiService } from '../services/gemini.service';
 import { assetGeneratorService } from '../services/asset-generator.service';
+import { contentGenerationService } from '../services/content-generation.service';
 import { characterRepository } from '../repositories/character.repository';
 import { storyRepository } from '../repositories/story.repository';
 import { storyboardRepository } from '../repositories/storyboard.repository';
@@ -72,6 +73,30 @@ router.post('/content/storyboards/generate', async (req: Request, res: Response,
     res.status(201).json({
       status: 'success',
       data: { storyboard },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /content/episodes/generate
+ * Orchestrates the full creation of a new episode package from a concept.
+ * Stores the package as a JSON file for the renderer.
+ */
+router.post('/content/episodes/generate', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { learningConcept } = req.body;
+
+    if (!learningConcept) {
+      return next(new AppError('Learning concept is required', 400));
+    }
+
+    const episodePackage = await contentGenerationService.generateCompleteEpisode(learningConcept);
+
+    res.status(201).json({
+      status: 'success',
+      data: episodePackage,
     });
   } catch (error) {
     next(error);
