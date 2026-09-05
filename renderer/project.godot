@@ -12,12 +12,13 @@ config_version=5
 
 config/name="TotoRenderer"
 run/main_scene="res://scenes/episode.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
+config/icon="res://icon.svg"
 
 [autoload]
 
 AssetLoader="*res://scripts/asset_loader.gd"
-config/features=PackedStringArray("4.3", "Forward Plus")
-config/icon="res://icon.svg"
+EpisodeLoader="*res://scripts/episode_loader.gd"
 
 [display]
 

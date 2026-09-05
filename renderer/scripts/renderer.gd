@@ -3,6 +3,9 @@ extends Node2D
 ## Renderer
 ## Main controller for executing storyboard instructions.
 
+const CHARACTER_SCENE = preload("res://scenes/character.tscn")
+const OBJECT_SCENE = preload("res://scenes/object.tscn")
+
 @onready var background_node = $Background
 @onready var characters_container = $Characters
 @onready var objects_container = $Objects
@@ -13,6 +16,8 @@ extends Node2D
 var _registry = {}
 ## Map of resource names to their loaded objects (AudioStream, Texture2D).
 var _resource_registry = {}
+
+signal episode_finished
 
 ## SHOW command: Makes a character or object visible.
 func show_target(target_name: String) -> void:
@@ -131,7 +136,7 @@ func execute_action(action: Dictionary) -> void:
 			rotate_target(target, degrees, duration)
 		"PLAY_SOUND":
 			var params = action.get("params", {})
-			var sound_name = params.get("sound", target) # Fallback to target if sound param is missing
+			var sound_name = params.get("sound", target)
 			play_sound(sound_name)
 		_:
 			push_warning("Unsupported action type: " + type)
@@ -140,3 +145,75 @@ func execute_action(action: Dictionary) -> void:
 func execute_sequence(actions: Array) -> void:
 	for action in actions:
 		await execute_action(action)
+
+func _ready() -> void:
+	# For testing: Auto-load the test episode if it exists
+	var test_path = "res://test_episode.json"
+	if FileAccess.file_exists(test_path):
+		# Pre-register mock resources to allow the test to run without actual files
+		_register_mock_resources()
+
+		var data = EpisodeLoader.load_from_file(test_path)
+		if not data.is_empty():
+			# Wait a frame to ensure everything is initialized
+			await get_tree().process_frame
+			play_episode(data)
+
+func _register_mock_resources() -> void:
+	# Creates 1x1 placeholder textures so the engine doesn't complain about missing assets
+	var mock_tex = ImageTexture.create_from_image(Image.create(1, 1, false, Image.FORMAT_RGBA8))
+	register_resource("Toto", mock_tex)
+	register_resource("forest", mock_tex)
+	register_resource("apple", mock_tex)
+
+## Prepares the scene by setting background and spawning actors.
+func setup_scene(scene_data: Dictionary) -> void:
+	# 1. Clear previous actors
+	_clear_registry()
+
+	# 2. Set Background
+	var bg_name = scene_data.get("background", "")
+	var bg_texture = _resource_registry.get(bg_name)
+	if bg_texture:
+		background_node.texture = bg_texture
+
+	# 3. Spawn Characters
+	for char_name in scene_data.get("characters", []):
+		var char_instance = CHARACTER_SCENE.instantiate()
+		characters_container.add_child(char_instance)
+		register_node(char_name, char_instance)
+
+		# Set default texture if available
+		var texture = _resource_registry.get(char_name)
+		if texture:
+			char_instance.set_texture(texture)
+
+	# 4. Spawn Objects
+	for obj_name in scene_data.get("objects", []):
+		var obj_instance = OBJECT_SCENE.instantiate()
+		objects_container.add_child(obj_instance)
+		register_node(obj_name, obj_instance)
+
+		var texture = _resource_registry.get(obj_name)
+		if texture:
+			obj_instance.set_texture(texture)
+
+## Resets the registry and clears instantiated actors.
+func _clear_registry() -> void:
+	_registry.clear()
+	for child in characters_container.get_children():
+		child.queue_free()
+	for child in objects_container.get_children():
+		child.queue_free()
+
+## Loads and plays an entire episode.
+func play_episode(data: Dictionary) -> void:
+	print("[renderer]: Playing episode: ", data.get("title", "Untitled"))
+
+	# Loop through scenes
+	for scene in data.get("scenes", []):
+		await setup_scene(scene)
+		await execute_sequence(scene.get("actions", []))
+
+	print("[renderer]: Episode complete.")
+	episode_finished.emit()

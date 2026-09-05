@@ -1,0 +1,55 @@
+{
+  "title": "Toto Finds an Apple",
+  "learningConcept": "Discovery",
+  "requiredAssets": [
+    { "name": "Toto", "type": "character" },
+    { "name": "forest", "type": "background" },
+    { "name": "apple", "type": "object" }
+  ],
+  "scenes": [
+    {
+      "background": "forest",
+      "duration": 5,
+      "characters": ["Toto"],
+      "objects": ["apple"],
+      "actions": [
+        {
+          "type": "MOVE",
+          "target": "apple",
+          "params": { "x": 1200, "y": 800 },
+          "duration": 0
+        },
+        {
+          "type": "MOVE",
+          "target": "Toto",
+          "params": { "x": -200, "y": 800 },
+          "duration": 0
+        },
+        {
+          "type": "ANIMATE",
+          "target": "Toto",
+          "params": { "animation": "walk" }
+        },
+        {
+          "type": "MOVE",
+          "target": "Toto",
+          "params": { "x": 1000, "y": 800 },
+          "duration": 3
+        },
+        {
+          "type": "WAIT",
+          "duration": 3
+        },
+        {
+          "type": "ANIMATE",
+          "target": "Toto",
+          "params": { "animation": "happy" }
+        },
+        {
+          "type": "WAIT",
+          "duration": 2
+        }
+      ]
+    }
+  ]
+}
