@@ -41,3 +41,57 @@ Return ONLY a valid JSON object with the following structure:
 ### STORY REQUEST:
 Create a new, original story about Toto exploring and learning about ${learningConcept}.
 `;
+
+/**
+ * Template for converting a Story script into a technical Storyboard for Godot.
+ */
+export const getStoryboardGenerationPrompt = (story: any) => `
+You are a technical Animation Director.
+Your task is to convert a children's story script into a detailed, machine-readable Storyboard for the Godot animation engine.
+
+### INPUT STORY:
+Title: ${story.title}
+Concept: ${story.learningConcept}
+Characters: ${story.characters.join(', ')}
+Total Duration: ${story.estimatedDuration} seconds
+
+### CONSTRAINTS:
+1. **No Code**: Do NOT return any Godot GDScript or programming code.
+2. **Strict Actions**: Use ONLY these action types: SHOW, HIDE, MOVE, ANIMATE, WAIT, SPEAK, PLAY_SOUND, ROTATE, SCALE.
+3. **Asset Manifest**: Identify all unique assets (characters, backgrounds, objects, expressions, audio) required.
+4. **Target Coordinates**: For MOVE actions, use a 1920x1080 coordinate system.
+5. **JSON Only**: Return ONLY a valid JSON object.
+
+### OUTPUT FORMAT:
+{
+  "title": "${story.title}",
+  "learningConcept": "${story.learningConcept}",
+  "requiredAssets": [
+    { "name": "asset_name", "type": "character|background|object|expression|audio" }
+  ],
+  "scenes": [
+    {
+      "background": "background_name",
+      "duration": 15,
+      "characters": ["name1", "name2"],
+      "objects": ["obj1"],
+      "dialogue": [
+        { "characterName": "Toto", "text": "Hello!" }
+      ],
+      "actions": [
+        {
+          "type": "MOVE",
+          "target": "Toto",
+          "params": { "x": 500, "y": 800 },
+          "startTime": 0,
+          "duration": 2
+        }
+      ]
+    }
+  ],
+  "estimatedDuration": ${story.estimatedDuration}
+}
+
+### SCRIPT TO CONVERT:
+${JSON.stringify(story.scenes, null, 2)}
+`;

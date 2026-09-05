@@ -3,9 +3,12 @@ import { geminiService } from '../services/gemini.service';
 import { assetGeneratorService } from '../services/asset-generator.service';
 import { characterRepository } from '../repositories/character.repository';
 import { storyRepository } from '../repositories/story.repository';
-import { getStoryGenerationPrompt } from '../utils/prompt-templates';
+import { storyboardRepository } from '../repositories/storyboard.repository';
+import { getStoryGenerationPrompt, getStoryboardGenerationPrompt } from '../utils/prompt-templates';
 import { validateGeneratedStory } from '../utils/story-validator';
+import { validateGeneratedStoryboard } from '../utils/storyboard-validator';
 import { CreateStoryDto } from '../models/story.model';
+import { Storyboard } from '../models/storyboard.model';
 import { AppError } from '../utils/app-error';
 
 const router = Router();
@@ -31,6 +34,45 @@ router.post('/content/stories/generate', async (req: Request, res: Response, nex
     const story = await storyRepository.create(storyData);
 
     res.status(201).json({ status: 'success', data: { story } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /content/storyboards/generate
+ * Generates a detailed storyboard from an existing story script.
+ */
+router.post('/content/storyboards/generate', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { storyId } = req.body;
+
+    if (!storyId) {
+      return next(new AppError('Story ID is required', 400));
+    }
+
+    // 1. Load the story
+    const story = await storyRepository.findById(storyId);
+    if (!story) {
+      return next(new AppError('Story not found', 404));
+    }
+
+    // 2. Build Director AI prompt
+    const prompt = getStoryboardGenerationPrompt(story);
+
+    // 3. Call Gemini
+    const storyboardData = await geminiService.generateJson<Storyboard>(prompt);
+
+    // 4. Validate
+    validateGeneratedStoryboard(storyboardData);
+
+    // 5. Persist the storyboard
+    const storyboard = await storyboardRepository.create(storyboardData);
+
+    res.status(201).json({
+      status: 'success',
+      data: { storyboard },
+    });
   } catch (error) {
     next(error);
   }
