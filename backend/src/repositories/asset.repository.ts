@@ -44,6 +44,14 @@ export class AssetRepository {
     return asset || null;
   }
 
+  async findByTypeAndName(type: AssetType, name: string): Promise<Asset | null> {
+    const asset = await db(this.tableName)
+      .where({ type, name })
+      .first();
+
+    return asset || null;
+  }
+
   /**
    * Lists all assets of a specific type.
    */
