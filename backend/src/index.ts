@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import { config } from './config';
 import { connectDB } from './config/database';
 import healthRoutes from './routes/health.routes';
+import episodeRoutes from './routes/episode.routes';
 import { errorHandler } from './utils/error-handler';
 import { AppError } from './utils/app-error';
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // Routes
 app.use(healthRoutes);
+app.use(episodeRoutes);
 
 // Handle undefined routes
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
