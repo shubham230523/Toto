@@ -16,3 +16,4 @@ class TotoSplashScreen extends StatelessWidget {
     );
   }
 }
+64

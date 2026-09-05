@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://df7x8v7k8v7k8"]
+
+[node name="Episode" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Characters" type="Node2D" parent="."]
+
+[node name="Objects" type="Node2D" parent="."]
+
+[node name="Audio" type="Node" parent="."]
+
+[node name="Camera" type="Camera2D" parent="."]
+anchor_mode = 0
