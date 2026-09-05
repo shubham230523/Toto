@@ -11,7 +11,8 @@ export const config = {
     url: process.env.DATABASE_URL || '',
   },
   storage: {
-    url: process.env.STORAGE_URL || '',
+    url: process.env.STORAGE_URL || 'http://localhost:3000/uploads',
+    path: process.env.STORAGE_PATH || './uploads',
   },
   ai: {
     geminiApiKey: process.env.GEMINI_API_KEY || '',
@@ -19,6 +20,7 @@ export const config = {
     imageProvider: {
       url: process.env.IMAGE_PROVIDER_URL || '',
       apiKey: process.env.IMAGE_PROVIDER_API_KEY || '',
+      model: process.env.IMAGE_MODEL || 'stabilityai/stable-diffusion-xl-base-1.0',
     },
   },
 };

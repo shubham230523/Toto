@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import path from 'path';
 import morgan from 'morgan';
 import { config } from './config';
 import { connectDB } from './config/database';
