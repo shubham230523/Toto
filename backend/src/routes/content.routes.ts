@@ -199,4 +199,64 @@ router.post('/content/assets/generate-expression', async (req: Request, res: Res
   }
 });
 
+/**
+ * POST /content/assets/generate-background
+ * Generates a background asset for scene composition.
+ */
+router.post('/content/assets/generate-background', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { name } = req.body;
+
+    if (!name) {
+      return next(new AppError('Background name is required', 400));
+    }
+
+    const imagePrompt = `
+      Create a high-quality 2D vector-style cartoon background for a children's animation series.
+      Theme: ${name}
+
+      Requirements:
+      - Clean 2D children's cartoon style, similar to Cocomelon or Bluey.
+      - Bright, cheerful colors and soft lighting.
+      - Flat perspective or simple 2.5D, optimized for Godot scene composition.
+      - No characters in the image.
+      - High detail on scenery (e.g., trees, sky, flowers) but simplified for animation.
+      - 16:9 aspect ratio aesthetic (though generated as 1024x1024).
+      - Professional animation background asset.
+    `;
+
+    // 1. Generate Image
+    const generationResult = await hostedImageService.generateImage(imagePrompt, {
+      width: 1024,
+      height: 1024,
+    });
+
+    // 2. Store the image
+    const fileName = `bg_${name.toLowerCase()}.png`;
+    const publicUrl = await localStorageService.uploadImage(
+      generationResult.url,
+      fileName,
+      'backgrounds'
+    );
+
+    // 3. Save to Asset Library
+    const asset = await assetRepository.create({
+      name: name,
+      type: AssetType.BACKGROUND,
+      url: publicUrl,
+      metadata: {
+        generated_prompt: imagePrompt,
+        style: '2d-cartoon',
+      },
+    });
+
+    res.status(201).json({
+      status: 'success',
+      data: { asset },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;
