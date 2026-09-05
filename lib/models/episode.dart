@@ -37,11 +37,11 @@ class Episode {
     return Episode(
       id: json['id'] as String,
       title: json['title'] as String,
-      videoUrl: json['videoUrl'] as String,
+      videoUrl: (json['video_url'] ?? json['videoUrl']) as String,
       duration: json['duration'] as int,
       characters: (json['characters'] as List<dynamic>).map((e) => e as String).toList(),
       status: EpisodeStatus.fromString(json['status'] as String),
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: DateTime.parse((json['created_at'] ?? json['createdAt']) as String),
     );
   }
 
