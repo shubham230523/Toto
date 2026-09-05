@@ -1,13 +1,13 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import healthRoutes from './routes/health.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', message: 'Toto Backend is running' });
-});
+// Routes
+app.use(healthRoutes);
 
 app.listen(PORT, () => {
   console.log(`[server]: Toto Backend is running at http://localhost:${PORT}`);
