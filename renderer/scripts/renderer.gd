@@ -147,17 +147,40 @@ func execute_sequence(actions: Array) -> void:
 		await execute_action(action)
 
 func _ready() -> void:
-	# For testing: Auto-load the test episode if it exists
-	var test_path = "res://test_episode.json"
-	if FileAccess.file_exists(test_path):
-		# Pre-register mock resources to allow the test to run without actual files
-		_register_mock_resources()
+	var episode_path = ""
 
-		var data = EpisodeLoader.load_from_file(test_path)
+	# 1. Check for command-line arguments (Headless support)
+	var args = OS.get_cmdline_args()
+	args.append_array(OS.get_cmdline_user_args())
+
+	for i in range(args.size()):
+		if args[i] == "--episode" and i + 1 < args.size():
+			episode_path = args[i + 1]
+			break
+
+	# 2. Fallback to test episode if no CLI argument provided
+	if episode_path == "":
+		var test_path = "res://test_episode.json"
+		if FileAccess.file_exists(test_path):
+			episode_path = test_path
+			_register_mock_resources() # Only mock for internal tests
+
+	# 3. Load and play if a path was found
+	if episode_path != "":
+		var data = EpisodeLoader.load_from_file(episode_path)
 		if not data.is_empty():
 			# Wait a frame to ensure everything is initialized
 			await get_tree().process_frame
-			play_episode(data)
+			var duration = await play_episode(data)
+
+			# 4. Auto-exit in headless mode after completion
+			if DisplayServer.get_name() == "headless" or OS.has_feature("movie"):
+				_output_result("success", duration)
+				get_tree().quit()
+		else:
+			if DisplayServer.get_name() == "headless" or OS.has_feature("movie"):
+				_output_result("error", 0.0, "Failed to load episode definition")
+				get_tree().quit(1)
 
 func _register_mock_resources() -> void:
 	# Creates 1x1 placeholder textures so the engine doesn't complain about missing assets
@@ -206,14 +229,28 @@ func _clear_registry() -> void:
 	for child in objects_container.get_children():
 		child.queue_free()
 
-## Loads and plays an entire episode.
-func play_episode(data: Dictionary) -> void:
+## Loads and plays an entire episode. Returns total duration.
+func play_episode(data: Dictionary) -> float:
 	print("[renderer]: Playing episode: ", data.get("title", "Untitled"))
+	var total_duration = 0.0
 
 	# Loop through scenes
 	for scene in data.get("scenes", []):
 		await setup_scene(scene)
 		await execute_sequence(scene.get("actions", []))
+		total_duration += scene.get("duration", 0.0)
 
 	print("[renderer]: Episode complete.")
 	episode_finished.emit()
+	return total_duration
+
+func _output_result(status: String, duration: float = 0.0, error_msg: String = "") -> void:
+	var result = {
+		"status": status,
+		"duration": duration,
+		"output": ProjectSettings.get_setting("editor/movie_writer/movie_file", ""),
+	}
+	if error_msg != "":
+		result["error"] = error_msg
+
+	print("RENDER_RESULT:", JSON.stringify(result))
