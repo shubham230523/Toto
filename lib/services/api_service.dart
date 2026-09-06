@@ -10,9 +10,9 @@ class ApiService {
   /// [excludeIds] Optional list of episode IDs to avoid.
   Future<Episode?> getRandomEpisode({List<String> excludeIds = const []}) async {
     try {
-      final queryParams = excludeIds.isNotEmpty ? '?exclude=\${excludeIds.join(',')}' : '';
+      final queryParams = excludeIds.isNotEmpty ? '?exclude=${excludeIds.join(',')}' : '';
       final response = await http.get(
-        Uri.parse('\$_baseUrl/episodes/random\$queryParams'),
+        Uri.parse('$_baseUrl/episodes/random$queryParams'),
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {

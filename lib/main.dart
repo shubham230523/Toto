@@ -9,7 +9,7 @@ void main() {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   
   // iOS-specific: Auto-hide the home indicator for an immersive experience
-  SystemChrome.setPrefersHomeIndicatorAutoHidden(true);
+  // SystemChrome.setPrefersHomeIndicatorAutoHidden(true);
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,

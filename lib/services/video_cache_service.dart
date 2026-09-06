@@ -102,4 +102,4 @@ class VideoCacheService {
   }
 }
 
-export const videoCacheService = VideoCacheService();
+final videoCacheService = VideoCacheService();

@@ -12,7 +12,6 @@ class TotoTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: Brightness.dark,
-        background: darkBackground,
         surface: darkBackground,
       ),
       scaffoldBackgroundColor: darkBackground,
