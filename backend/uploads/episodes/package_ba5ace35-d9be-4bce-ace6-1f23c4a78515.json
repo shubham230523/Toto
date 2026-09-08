@@ -1,0 +1,517 @@
+{
+  "episode": {
+    "id": "ba5ace35-d9be-4bce-ace6-1f23c4a78515",
+    "title": "Toto and the Colorful Flower",
+    "video_url": null,
+    "duration": null,
+    "characters": [],
+    "status": "generating",
+    "created_at": "2026-09-08 16:30:52"
+  },
+  "story": {
+    "id": "ce821185-9070-4d23-a674-7aa6564cac27",
+    "title": "Toto and the Colorful Flower",
+    "learning_concept": "Toto finds a colorful flower",
+    "characters": [
+      "Toto",
+      "Mimi"
+    ],
+    "scenes": [
+      {
+        "description": "Toto the turtle walks slowly through a soft green garden, greeting friendly butterflies.",
+        "setting": "A bright, gentle garden with soft grass, friendly trees, and a warm sky.",
+        "duration": 15
+      },
+      {
+        "description": "Toto spots a beautiful colorful flower blooming nearby, its red, yellow, and blue petals sparkling in the sun.",
+        "setting": "Same garden, close-up on the colorful flower with vibrant petals.",
+        "duration": 15
+      },
+      {
+        "description": "Toto gently touches the flower and smiles, as it softly opens and releases a warm glow.",
+        "setting": "Garden in soft evening light, cozy and calm.",
+        "duration": 15
+      }
+    ],
+    "estimated_duration": 45,
+    "created_at": "2026-09-08 16:32:50",
+    "dialogue": [
+      {
+        "characterName": "Toto",
+        "text": "Hello flower!"
+      },
+      {
+        "characterName": "Mimi",
+        "text": "Look, a colorful flower!"
+      },
+      {
+        "characterName": "Toto",
+        "text": "So pretty!"
+      }
+    ],
+    "learningConcept": "Toto finds a colorful flower",
+    "estimatedDuration": 45
+  },
+  "storyboard": {
+    "id": "a504e080-e7a0-4498-9599-8b530489eb25",
+    "title": "Toto and the Colorful Flower",
+    "learning_concept": "Toto finds a colorful flower",
+    "scenes": [
+      {
+        "background": "Garden_Bright",
+        "duration": 15,
+        "characters": [
+          "Toto"
+        ],
+        "objects": [
+          "Butterfly"
+        ],
+        "dialogue": [
+          {
+            "characterName": "Toto",
+            "text": "Hello there!"
+          }
+        ],
+        "actions": [
+          {
+            "type": "MOVE",
+            "target": "Toto",
+            "params": {
+              "x": 800,
+              "y": 800
+            },
+            "startTime": 0,
+            "duration": 3
+          },
+          {
+            "type": "ANIMATE",
+            "target": "Toto",
+            "params": {
+              "action": "walk"
+            },
+            "startTime": 0,
+            "duration": 3
+          },
+          {
+            "type": "SHOW",
+            "target": "Butterfly",
+            "params": {
+              "x": 600,
+              "y": 500
+            },
+            "startTime": 2,
+            "duration": 1
+          },
+          {
+            "type": "PLAY_SOUND",
+            "target": "Garden_Ambient",
+            "params": {},
+            "startTime": 0,
+            "duration": 15
+          },
+          {
+            "type": "WAIT",
+            "target": null,
+            "params": {},
+            "startTime": 12,
+            "duration": 3
+          }
+        ]
+      },
+      {
+        "background": "Garden_Closeup",
+        "duration": 15,
+        "characters": [
+          "Toto"
+        ],
+        "objects": [
+          "Colorful_Flower"
+        ],
+        "dialogue": [
+          {
+            "characterName": "Toto",
+            "text": "Wow, a colorful flower!"
+          }
+        ],
+        "actions": [
+          {
+            "type": "MOVE",
+            "target": "Toto",
+            "params": {
+              "x": 800,
+              "y": 600
+            },
+            "startTime": 15,
+            "duration": 3
+          },
+          {
+            "type": "ANIMATE",
+            "target": "Colorful_Flower",
+            "params": {
+              "action": "bloom"
+            },
+            "startTime": 15,
+            "duration": 3
+          },
+          {
+            "type": "PLAY_SOUND",
+            "target": "Flower_Bloom",
+            "params": {},
+            "startTime": 15,
+            "duration": 2
+          },
+          {
+            "type": "SPEAK",
+            "target": "Toto",
+            "params": {
+              "text": "Wow, a colorful flower!"
+            },
+            "startTime": 18,
+            "duration": 2
+          },
+          {
+            "type": "WAIT",
+            "target": null,
+            "params": {},
+            "startTime": 25,
+            "duration": 5
+          }
+        ]
+      },
+      {
+        "background": "Garden_Evening",
+        "duration": 15,
+        "characters": [
+          "Toto",
+          "Mimi"
+        ],
+        "objects": [
+          "Colorful_Flower"
+        ],
+        "dialogue": [
+          {
+            "characterName": "Toto",
+            "text": "The flower is so warm!"
+          },
+          {
+            "characterName": "Mimi",
+            "text": "It's beautiful!"
+          }
+        ],
+        "actions": [
+          {
+            "type": "MOVE",
+            "target": "Toto",
+            "params": {
+              "x": 800,
+              "y": 500
+            },
+            "startTime": 30,
+            "duration": 2
+          },
+          {
+            "type": "ANIMATE",
+            "target": "Colorful_Flower",
+            "params": {
+              "action": "open"
+            },
+            "startTime": 30,
+            "duration": 3
+          },
+          {
+            "type": "SPEAK",
+            "target": "Toto",
+            "params": {
+              "text": "The flower is so warm!"
+            },
+            "startTime": 30,
+            "duration": 2
+          },
+          {
+            "type": "SPEAK",
+            "target": "Mimi",
+            "params": {
+              "text": "It's beautiful!"
+            },
+            "startTime": 33,
+            "duration": 2
+          },
+          {
+            "type": "PLAY_SOUND",
+            "target": "Warm_Glow",
+            "params": {},
+            "startTime": 35,
+            "duration": 5
+          },
+          {
+            "type": "SCALE",
+            "target": "Colorful_Flower",
+            "params": {
+              "x": 1.5,
+              "y": 1.5
+            },
+            "startTime": 40,
+            "duration": 5
+          }
+        ]
+      }
+    ],
+    "required_assets": "[{\"name\":\"Toto\",\"type\":\"character\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/characters/toto_canonical.png\"},{\"name\":\"Mimi\",\"type\":\"character\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/characters/mimi_canonical.png\"},{\"name\":\"Garden_Bright\",\"type\":\"background\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/backgrounds/bg_garden_bright.png\"},{\"name\":\"Garden_Closeup\",\"type\":\"background\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/backgrounds/bg_garden_closeup.png\"},{\"name\":\"Garden_Evening\",\"type\":\"background\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/backgrounds/bg_garden_evening.png\"},{\"name\":\"Colorful_Flower\",\"type\":\"object\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/objects/obj_colorful_flower.png\"},{\"name\":\"Butterfly\",\"type\":\"object\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/objects/obj_butterfly.png\"},{\"name\":\"Garden_Ambient\",\"type\":\"audio\",\"metadata\":{\"text\":\"Ambient garden sounds: gentle breeze, distant birds\"},\"url\":\"http://localhost:3000/uploads/audio/audio_garden_ambient.mp3\"},{\"name\":\"Flower_Bloom\",\"type\":\"audio\",\"metadata\":{\"text\":\"Soft flower blooming sound\"},\"url\":\"http://localhost:3000/uploads/audio/audio_flower_bloom.mp3\"},{\"name\":\"Warm_Glow\",\"type\":\"audio\",\"metadata\":{\"text\":\"Warm glowing light sound effect\"},\"url\":\"http://localhost:3000/uploads/audio/audio_warm_glow.mp3\"},{\"name\":\"Toto_Walk_Expression\",\"type\":\"expression\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/expressions/toto_expression_walk.png\"},{\"name\":\"Toto_Smile_Expression\",\"type\":\"expression\",\"metadata\":{},\"url\":\"http://localhost:3000/uploads/expressions/toto_expression_smile.png\"}]",
+    "estimated_duration": 45,
+    "created_at": "2026-09-08 16:40:09",
+    "requiredAssets": [
+      {
+        "name": "Toto",
+        "type": "character",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/characters/toto_canonical.png"
+      },
+      {
+        "name": "Mimi",
+        "type": "character",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/characters/mimi_canonical.png"
+      },
+      {
+        "name": "Garden_Bright",
+        "type": "background",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/backgrounds/bg_garden_bright.png"
+      },
+      {
+        "name": "Garden_Closeup",
+        "type": "background",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/backgrounds/bg_garden_closeup.png"
+      },
+      {
+        "name": "Garden_Evening",
+        "type": "background",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/backgrounds/bg_garden_evening.png"
+      },
+      {
+        "name": "Colorful_Flower",
+        "type": "object",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/objects/obj_colorful_flower.png"
+      },
+      {
+        "name": "Butterfly",
+        "type": "object",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/objects/obj_butterfly.png"
+      },
+      {
+        "name": "Garden_Ambient",
+        "type": "audio",
+        "metadata": {
+          "text": "Ambient garden sounds: gentle breeze, distant birds"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_garden_ambient.mp3"
+      },
+      {
+        "name": "Flower_Bloom",
+        "type": "audio",
+        "metadata": {
+          "text": "Soft flower blooming sound"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_flower_bloom.mp3"
+      },
+      {
+        "name": "Warm_Glow",
+        "type": "audio",
+        "metadata": {
+          "text": "Warm glowing light sound effect"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_warm_glow.mp3"
+      },
+      {
+        "name": "Toto_Walk_Expression",
+        "type": "expression",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/expressions/toto_expression_walk.png"
+      },
+      {
+        "name": "Toto_Smile_Expression",
+        "type": "expression",
+        "metadata": {},
+        "url": "http://localhost:3000/uploads/expressions/toto_expression_smile.png"
+      }
+    ],
+    "learningConcept": "Toto finds a colorful flower",
+    "estimatedDuration": 45
+  },
+  "characters": [
+    {
+      "id": null,
+      "name": "Mimi",
+      "species": "Rabbit",
+      "personality": "Energetic, fast-talking, and loves colors.",
+      "appearance": "A white rabbit with a pink bow.",
+      "metadata": {
+        "role": "Secondary",
+        "traits": [
+          "fast",
+          "colorful",
+          "bright"
+        ]
+      },
+      "created_at": "2026-09-08 11:53:06",
+      "weight": 30
+    },
+    {
+      "id": null,
+      "name": "Toto",
+      "species": "Turtle",
+      "personality": "Thoughtful, curious, and gentle. Loves exploring at a slow and steady pace. Always notices the tiny details like a unique flower or a shiny pebble.",
+      "appearance": "A small, bright green turtle with a soft-edged, patterned shell in earth tones. Big, friendly brown eyes and a small, warm smile. Moves with cute, slightly clumsy steps.",
+      "metadata": {
+        "role": "Protagonist",
+        "age_group": "Toddler",
+        "primary_color": "Green",
+        "is_canonical": true,
+        "traits": [
+          "slow",
+          "observant",
+          "kind"
+        ]
+      },
+      "created_at": "2026-09-08 11:53:06",
+      "weight": 40
+    }
+  ],
+  "assets": [
+    {
+      "id": "a0bcf404-243d-483e-91d4-e56d07919926",
+      "name": "Toto",
+      "type": "character",
+      "url": "http://localhost:3000/uploads/characters/toto_canonical.png",
+      "metadata": {
+        "is_canonical": true,
+        "generated_prompt": "\n      2D vector cartoon, children's book style. Character: Toto.\n      Details: Character Bible: Toto \r\n\r\n 1. Appearance\r\nToto is a small, bright green turtle designed with a toddler-friendly aesthetic. He has a soft-edged, rounded body without sharp corners. His shell is a key feature, appearing sturdy but not heavy, featuring a simplified geometric pattern. His most striking feature is his large, expressive brown eyes that convey a sense of wonder and kindness.\n      Full body, thick clean outlines, white background, toddler-friendly, cute.\n    "
+      },
+      "created_at": "2026-09-08 16:40:12"
+    },
+    {
+      "id": "bdf50a61-ea32-4173-8b1b-c5f5a1193217",
+      "name": "Mimi",
+      "type": "character",
+      "url": "http://localhost:3000/uploads/characters/mimi_canonical.png",
+      "metadata": {
+        "is_canonical": true,
+        "generated_prompt": "\n      Create a high-quality, professional 2D vector-style cartoon character asset for a children's animation series.\n      Character: Mimi\n      Details from Character Bible:\n      # Character Bible: Mimi 🐰\r\n\r\n## Identity\r\n- **Name**: Mimi\r\n- **Species**: Rabbit\r\n- **Age**: Toddler (equivalent to 3 years old)\r\n- **Role**: Secondary character, Toto's energetic friend.\r\n\r\n## Personality\r\n- **Fast & Active**: Moves quickly and loves hopping everywhere.\r\n- **Color-loving**: Fascinated by bright colors and flowers.\r\n- **Observant**: Has big ears that twitch when she hears something interesting.\r\n- **Gentle**: Loves nature and treats every bug and flower with care.\r\n\r\n## Visual Appearance\r\n- **Core Aesthetic**: 2D vector style, clean thick outlines, soft minimalist gradients.\r\n- **Body**: A small, sleek white rabbit with long, expressive ears.\r\n- **Face**: Big, bright eyes. A tiny pink nose. Long ears that twitch occasionally.\r\n- **Clothing/Accessories**: Wears a large, bright pink bow on one of her ears.\r\n- **Colors**:\r\n  - Primary: Pure White\r\n  - Secondary: Soft Pink (inner ears, nose, and bow)\r\n- **Movement**: Quick hops, twitching nose, and lively ear movements.\r\n\r\n## Animations\r\n- **Idle**: Nose twitching, ears swaying gently.\r\n- **Walk**: Quick, rhythmic hops.\r\n- **Excited**: Rapid hopping in place, ears perked high.\r\n- **Curious**: Tilting head to the side, ears twitching.\r\n\n      Requirements:\n      - Full body shot, neutral T-pose or friendly standing pose.\n      - Clean, thick outlines (darker than fill colors).\n      - Soft minimalist gradients.\n      - Solid white background (for easy removal).\n      - High resolution, 2D vector aesthetic.\n      - Toddler-friendly, cute, and gentle.\n    "
+      },
+      "created_at": "2026-09-08 16:16:02"
+    },
+    {
+      "id": "1f193e1d-6215-4c66-b858-430648fbf739",
+      "name": "Garden_Bright",
+      "type": "background",
+      "url": "http://localhost:3000/uploads/backgrounds/bg_garden_bright.png",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon background for a children's animation series.\n      Theme: Garden_Bright\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Bright, cheerful colors and soft lighting.\n      - Flat perspective or simple 2.5D, optimized for Godot scene composition.\n      - No characters.\n      - Solid detail on scenery, simplified for animation.\n    ",
+        "style": "2d-cartoon"
+      },
+      "created_at": "2026-09-08 16:40:58"
+    },
+    {
+      "id": "cdd2fa2e-e60e-45b0-9074-e80373b987b8",
+      "name": "Garden_Closeup",
+      "type": "background",
+      "url": "http://localhost:3000/uploads/backgrounds/bg_garden_closeup.png",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon background for a children's animation series.\n      Theme: Garden_Closeup\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Bright, cheerful colors and soft lighting.\n      - Flat perspective or simple 2.5D, optimized for Godot scene composition.\n      - No characters.\n      - Solid detail on scenery, simplified for animation.\n    ",
+        "style": "2d-cartoon"
+      },
+      "created_at": "2026-09-08 16:41:44"
+    },
+    {
+      "id": "fdade771-8d2c-4179-b56e-3d1569a011a0",
+      "name": "Garden_Evening",
+      "type": "background",
+      "url": "http://localhost:3000/uploads/backgrounds/bg_garden_evening.png",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon background for a children's animation series.\n      Theme: Garden_Evening\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Bright, cheerful colors and soft lighting.\n      - Flat perspective or simple 2.5D, optimized for Godot scene composition.\n      - No characters.\n      - Solid detail on scenery, simplified for animation.\n    ",
+        "style": "2d-cartoon"
+      },
+      "created_at": "2026-09-08 16:42:28"
+    },
+    {
+      "id": "4c2181ba-23f1-46c6-9be4-7c7a03e3477e",
+      "name": "Colorful_Flower",
+      "type": "object",
+      "url": "http://localhost:3000/uploads/objects/obj_colorful_flower.png",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon object asset for a children's animation series.\n      Object: Colorful_Flower\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Single object centered.\n      - Bright, vibrant, toddler-friendly colors.\n      - Thick, clean outlines.\n      - Solid white background.\n    ",
+        "object_type": "colorful_flower"
+      },
+      "created_at": "2026-09-08 16:43:13"
+    },
+    {
+      "id": "f805f0d7-4c96-48d5-a242-69054d4b7e6c",
+      "name": "Butterfly",
+      "type": "object",
+      "url": "http://localhost:3000/uploads/objects/obj_butterfly.png",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon object asset for a children's animation series.\n      Object: Butterfly\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Single object centered.\n      - Bright, vibrant, toddler-friendly colors.\n      - Thick, clean outlines.\n      - Solid white background.\n    ",
+        "object_type": "butterfly"
+      },
+      "created_at": "2026-09-08 16:43:58"
+    },
+    {
+      "id": "72613e41-a3c9-4932-98ab-6fd1401c85d3",
+      "name": "Garden_Ambient",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_garden_ambient.mp3",
+      "metadata": {
+        "text": "Ambient garden sounds: gentle breeze, distant birds"
+      },
+      "created_at": "2026-09-08 16:43:58"
+    },
+    {
+      "id": "4ad531cc-3b7a-4e94-92d5-fbe5e6e6edfe",
+      "name": "Flower_Bloom",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_flower_bloom.mp3",
+      "metadata": {
+        "text": "Soft flower blooming sound"
+      },
+      "created_at": "2026-09-08 16:43:58"
+    },
+    {
+      "id": "eb9fa1bd-61a8-4229-9be6-26957b547005",
+      "name": "Warm_Glow",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_warm_glow.mp3",
+      "metadata": {
+        "text": "Warm glowing light sound effect"
+      },
+      "created_at": "2026-09-08 16:43:59"
+    },
+    {
+      "id": "3ff09140-5571-4c3f-ae03-fcc037442b82",
+      "name": "Toto_Walk",
+      "type": "expression",
+      "url": "http://localhost:3000/uploads/expressions/toto_expression_walk.png",
+      "metadata": {
+        "character_name": "Toto",
+        "expression_type": "walk",
+        "generated_prompt": "\n      2D vector cartoon, headshot. Character: Toto.\n      Expression: WALK.\n      Details: Character Bible: Toto \r\n\r\n 1. Appearance\r\nToto is a small, bright green turtle designed with a toddler-friendly aesthetic. He has a soft-edged, rounded body without sharp corners. His shell is a key feature, appearing sturdy but not heavy, featuring a simplified geometric pattern. His most striking feature is his large, expressive brown eyes that convey a sense of wonder and kindness.\n      Thick outlines, white background, cute.\n    "
+      },
+      "created_at": "2026-09-08 16:44:43"
+    },
+    {
+      "id": "31ecc0ba-4f4d-4bdd-a5bd-3190644b1bb4",
+      "name": "Toto_Smile",
+      "type": "expression",
+      "url": "http://localhost:3000/uploads/expressions/toto_expression_smile.png",
+      "metadata": {
+        "character_name": "Toto",
+        "expression_type": "smile",
+        "generated_prompt": "\n      2D vector cartoon, headshot. Character: Toto.\n      Expression: SMILE.\n      Details: Character Bible: Toto \r\n\r\n 1. Appearance\r\nToto is a small, bright green turtle designed with a toddler-friendly aesthetic. He has a soft-edged, rounded body without sharp corners. His shell is a key feature, appearing sturdy but not heavy, featuring a simplified geometric pattern. His most striking feature is his large, expressive brown eyes that convey a sense of wonder and kindness.\n      Thick outlines, white background, cute.\n    "
+      },
+      "created_at": "2026-09-08 16:45:29"
+    }
+  ]
+}
