@@ -14,7 +14,7 @@ class TotoPlayerScreen extends StatefulWidget {
   State<TotoPlayerScreen> createState() => _TotoPlayerScreenState();
 }
 
-class _TotoPlayerScreenState extends State<TotoPlayerScreen> {
+class _TotoPlayerScreenState extends State<TotoPlayerScreen> with WidgetsBindingObserver {
   final ApiService _apiService = ApiService();
   final VideoPlaybackService _playbackService = VideoPlaybackService();
   
@@ -34,8 +34,20 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    WidgetsBinding.instance.addObserver(this);
+    _setImmersiveMode();
     _loadAndPlayRandomEpisode();
+  }
+
+  void _setImmersiveMode() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _setImmersiveMode();
+    }
   }
 
   Future<void> _loadAndPlayRandomEpisode({int retryCount = 0}) async {
@@ -166,6 +178,7 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _playbackService.dispose();
     super.dispose();
   }
@@ -177,18 +190,31 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: _errorMessage != null ? () => _loadAndPlayRandomEpisode() : null,
         child: LayoutBuilder(
           builder: (context, constraints) {
             if (_isLoading) {
-              return const SizedBox.expand(); // Immersive black screen
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white24,
+                  strokeWidth: 2,
+                ),
+              );
             }
 
             if (_errorMessage != null) {
               return Center(
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.white12, fontSize: 14),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.refresh, color: Colors.white24, size: 48),
+                    const SizedBox(height: 16),
+                    Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.white38, fontSize: 16),
+                    ),
+                  ],
                 ),
               );
             }

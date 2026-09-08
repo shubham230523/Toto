@@ -48,7 +48,8 @@ class VideoPlaybackService {
     _controller?.addListener(() {
       if (_controller != null &&
           _controller!.value.isInitialized &&
-          _controller!.value.position >= _controller!.value.duration) {
+          _controller!.value.position >= _controller!.value.duration &&
+          !_controller!.value.isPlaying) {
         onComplete();
       }
     });

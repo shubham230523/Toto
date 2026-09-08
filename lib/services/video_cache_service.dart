@@ -23,15 +23,18 @@ class VideoCacheService {
         return file;
       }
 
-      // Download and save
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(minutes: 2));
+      // Download to a temporary file first to avoid corrupted cache on interruption
+      final tempFile = File(p.join(directory.path, '${fileName}.tmp'));
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(minutes: 5));
+      
       if (response.statusCode == 200) {
-        await file.writeAsBytes(response.bodyBytes);
+        await tempFile.writeAsBytes(response.bodyBytes);
+        await tempFile.rename(filePath);
         
         // After saving, check and clean up cache if needed
         _cleanupCache(directory);
         
-        return file;
+        return File(filePath);
       }
       return null;
     } catch (e) {
@@ -60,7 +63,8 @@ class VideoCacheService {
   Future<File?> getRandomCachedVideo() async {
     try {
       final directory = await _getCacheDirectory();
-      final files = directory.listSync().whereType<File>().where((f) => f.path.endsWith('.mp4')).toList();
+      final entities = await directory.list().toList();
+      final files = entities.whereType<File>().where((f) => f.path.endsWith('.mp4')).toList();
       
       if (files.isEmpty) return null;
       
@@ -74,24 +78,28 @@ class VideoCacheService {
   /// Removes old files if the cache size exceeds the limit.
   Future<void> _cleanupCache(Directory directory) async {
     try {
-      final files = directory.listSync().whereType<File>().toList();
+      final entities = await directory.list().toList();
+      final files = entities.whereType<File>().toList();
       
+      // Get stats for all files to avoid multiple sync calls
+      final fileStats = await Future.wait(files.map((f) async {
+        final stat = await f.stat();
+        return {'file': f, 'size': stat.size, 'modified': stat.modified};
+      }));
+
       // Sort by last modified (oldest first)
-      files.sort((a, b) => a.lastModifiedSync().compareTo(b.lastModifiedSync()));
+      fileStats.sort((a, b) => (a['modified'] as DateTime).compareTo(b['modified'] as DateTime));
 
-      int totalSize = 0;
-      for (final file in files) {
-        totalSize += file.lengthSync();
-      }
-
+      int totalSize = fileStats.fold(0, (sum, item) => sum + (item['size'] as int));
       final limitBytes = AppConstants.maxVideoCacheSizeMB * 1024 * 1024;
       
       if (totalSize > limitBytes) {
         int bytesToRemove = totalSize - limitBytes;
-        for (final file in files) {
+        for (final item in fileStats) {
           if (bytesToRemove <= 0) break;
           
-          final fileSize = file.lengthSync();
+          final file = item['file'] as File;
+          final fileSize = item['size'] as int;
           await file.delete();
           bytesToRemove -= fileSize;
         }
