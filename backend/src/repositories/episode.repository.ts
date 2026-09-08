@@ -6,6 +6,13 @@ import { characterRepository } from './character.repository';
 export class EpisodeRepository {
   private readonly tableName = 'episodes';
 
+  private mapFromDb(row: any): Episode {
+    return {
+      ...row,
+      characters: typeof row.characters === 'string' ? JSON.parse(row.characters) : row.characters,
+    };
+  }
+
   /**
    * Creates a new episode record.
    */
@@ -30,20 +37,22 @@ export class EpisodeRepository {
    * Finds an episode by its unique ID.
    */
   async findById(id: string): Promise<Episode | null> {
-    const episode = await db(this.tableName)
+    const row = await db(this.tableName)
       .where({ id })
       .first();
 
-    return episode || null;
+    return row ? this.mapFromDb(row) : null;
   }
 
   /**
    * Lists all episodes with 'ready' status.
    */
   async listReady(): Promise<Episode[]> {
-    return db(this.tableName)
+    const rows = await db(this.tableName)
       .where({ status: EpisodeStatus.READY })
       .orderBy('created_at', 'desc');
+
+    return rows.map(r => this.mapFromDb(r));
   }
 
   /**
@@ -68,14 +77,16 @@ export class EpisodeRepository {
       query = query.whereNotIn('id', excludeIds);
     }
 
-    let episodes = await query;
+    let rows = await query;
 
     // 2. Fallback if exclusion resulted in no episodes
-    if (episodes.length === 0 && excludeIds.length > 0) {
-      episodes = await db(this.tableName).where({ status: EpisodeStatus.READY });
+    if (rows.length === 0 && excludeIds.length > 0) {
+      rows = await db(this.tableName).where({ status: EpisodeStatus.READY });
     }
 
-    if (episodes.length === 0) return null;
+    if (rows.length === 0) return null;
+
+    const episodes = rows.map(r => this.mapFromDb(r));
 
     // 3. Perform Weighted Selection
     const characterWeights = await characterRepository.getNameWeightMap();
@@ -83,9 +94,7 @@ export class EpisodeRepository {
     // Calculate total weights for each episode
     const episodeWeights = episodes.map(ep => {
       let weight = 0;
-      // ep.characters is a JSON array of strings
-      const names = typeof ep.characters === 'string' ? JSON.parse(ep.characters) : ep.characters;
-      const namesList = Array.isArray(names) ? names : [];
+      const namesList = Array.isArray(ep.characters) ? ep.characters : [];
 
       for (const name of namesList) {
         weight += characterWeights[name] || 10; // default weight 10

@@ -17,7 +17,7 @@ Your task is to create a script for a short, animated episode of "Toto", an AI-p
 6. **Duration**: The total estimated duration should be between 30 and 60 seconds.
 
 ### OUTPUT FORMAT:
-Return ONLY a valid JSON object with the following structure:
+Ensure the output is a single, valid JSON object.
 {
   "title": "A short, catchy title",
   "learningConcept": "${learningConcept}",

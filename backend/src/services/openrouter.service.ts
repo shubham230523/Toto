@@ -20,24 +20,25 @@ export class OpenRouterService {
   /**
    * Generates text based on a prompt using OpenRouter.
    * @param prompt The string prompt to send.
+   * @param systemPrompt Optional system level instructions.
    * @param timeoutMs Maximum time to wait for a response.
    * @returns The generated text response.
    */
-  async generateText(prompt: string, timeoutMs: number = 45000): Promise<string> {
+  async generateText(prompt: string, systemPrompt?: string, timeoutMs: number = 45000): Promise<string> {
     try {
+      const messages: any[] = [];
+      if (systemPrompt) {
+        messages.push({ role: 'system', content: systemPrompt });
+      }
+      messages.push({ role: 'user', content: prompt });
+
       const response = await axios.post(
         `${this.baseUrl}/chat/completions`,
         {
           model: this.model,
-          messages: [
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-          // OpenRouter supports extra headers for app identification
+          messages,
           headers: {
-            'HTTP-Referer': 'https://toto.example.com', // Optional, for OpenRouter rankings
+            'HTTP-Referer': 'https://toto.example.com',
             'X-Title': 'Toto AI Assistant',
           }
         },
@@ -71,19 +72,36 @@ export class OpenRouterService {
   }
 
   /**
-   * Generates JSON content.
+   * Generates JSON content with robust extraction.
    */
   async generateJson<T>(prompt: string, timeoutMs: number = 45000): Promise<T> {
-    const jsonPrompt = `${prompt}\n\nIMPORTANT: Return ONLY a valid JSON object. Do not include markdown formatting or explanations.`;
-    const text = await this.generateText(jsonPrompt, timeoutMs);
+    const systemPrompt = "You are a specialized JSON generator. You MUST return ONLY valid JSON. No conversational text, no markdown code blocks, no preamble, and no postscript. Ensure all fields are present and correctly typed.";
+
+    const text = await this.generateText(prompt, systemPrompt, timeoutMs);
 
     try {
-      // Remove possible markdown code blocks if the model ignored instructions
-      const cleanedText = text.replace(/```json|```/g, '').trim();
-      return JSON.parse(cleanedText) as T;
-    } catch (error) {
-      console.error('[OpenRouterService]: JSON parsing error', error, 'Raw text:', text);
-      throw new AppError('Failed to parse OpenRouter response as JSON', 502);
+      // 1. Try direct parse
+      return JSON.parse(text) as T;
+    } catch (e1) {
+      try {
+        // 2. Try cleaning markdown and trimming
+        const cleaned = text.replace(/```json|```/g, '').trim();
+        return JSON.parse(cleaned) as T;
+      } catch (e2) {
+        try {
+          // 3. Robust Extraction: find first { and last }
+          const start = text.indexOf('{');
+          const end = text.lastIndexOf('}');
+          if (start !== -1 && end !== -1 && end > start) {
+            const extracted = text.substring(start, end + 1);
+            return JSON.parse(extracted) as T;
+          }
+          throw new Error('No JSON structure found in response');
+        } catch (e3) {
+          console.error('[OpenRouterService]: JSON parsing error. Raw text received:', text);
+          throw new AppError('Failed to parse OpenRouter response as JSON. The model returned non-structured text.', 502);
+        }
+      }
     }
   }
 }

@@ -25,21 +25,26 @@ export class ContentGenerationService {
   async generateCompleteEpisode(learningConcept: string): Promise<EpisodePackage> {
     console.log(`[ContentGeneration]: Starting generation for concept: "${learningConcept}"`);
 
-    // 1. Initial Episode Record
-    const episodeRecord = await episodeRepository.create({
-      title: 'Generating...',
-      status: EpisodeStatus.GENERATING,
-    });
+    try {
+      // 1. Initial Episode Record
+      const episodeRecord = await episodeRepository.create({
+        title: 'Generating...',
+        status: EpisodeStatus.GENERATING,
+      });
+      console.log(`[ContentGeneration]: Created initial record: ${episodeRecord.id}`);
 
-    // 2. Story Generation
-    const characters = await characterRepository.listAll();
-    const characterNames = characters.map(c => c.name);
+      // 2. Story Generation
+      const characters = await characterRepository.listAll();
+      const characterNames = characters.map(c => c.name);
+      console.log(`[ContentGeneration]: Using characters: ${characterNames.join(', ')}`);
 
-    const storyPrompt = getStoryGenerationPrompt(learningConcept, characterNames);
-    const storyData = await openRouterService.generateJson<CreateStoryDto>(storyPrompt);
+      const storyPrompt = getStoryGenerationPrompt(learningConcept, characterNames);
+      const storyData = await openRouterService.generateJson<CreateStoryDto>(storyPrompt);
+      console.log(`[ContentGeneration]: Story AI response received: ${storyData.title}`);
 
-    // 3. Story Validation
-    validateGeneratedStory(storyData, characterNames);
+      // 3. Story Validation
+      validateGeneratedStory(storyData, characterNames);
+      console.log(`[ContentGeneration]: Story validated.`);
 
     // 3.5 Content Safety Check
     const safetyResult = await safetyValidatorService.validateContent(storyData);
@@ -59,6 +64,7 @@ export class ContentGenerationService {
     // 4. Storyboard Generation
     const storyboardPrompt = getStoryboardGenerationPrompt(story);
     const storyboardData = await openRouterService.generateJson<Storyboard>(storyboardPrompt);
+    console.log(`[ContentGeneration]: Storyboard AI response received.`);
 
     // 5. Storyboard Validation
     validateGeneratedStoryboard(storyboardData);
@@ -68,6 +74,7 @@ export class ContentGenerationService {
     // 6. Asset Resolution (Search & Auto-Generate if missing)
     console.log(`[ContentGeneration]: Resolving ${storyboardRecord.requiredAssets.length} assets...`);
     const resolutionResults = await assetResolver.resolveMany(storyboardRecord.requiredAssets);
+    console.log(`[ContentGeneration]: Assets resolved.`);
 
     // 7. Update Storyboard with Resolved Asset URLs
     const updatedRequiredAssets = storyboardRecord.requiredAssets.map(req => {
@@ -117,10 +124,14 @@ export class ContentGenerationService {
       episodeRepository.update(finalEpisode!.id, { status: EpisodeStatus.FAILED });
     });
 
-    return {
-      ...episodePackage,
-      packageUrl,
-    };
+      return {
+        ...episodePackage,
+        packageUrl,
+      };
+    } catch (error: any) {
+      console.error(`[ContentGeneration]: Complete generation failed!`, error);
+      throw error;
+    }
   }
 
   /**

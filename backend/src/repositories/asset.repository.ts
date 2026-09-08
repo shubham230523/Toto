@@ -5,6 +5,13 @@ import { Asset, AssetType, CreateAssetDto } from '../models/asset.model';
 export class AssetRepository {
   private readonly tableName = 'assets';
 
+  private mapFromDb(row: any): Asset {
+    return {
+      ...row,
+      metadata: typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata,
+    };
+  }
+
   /**
    * Creates a new asset record.
    */
@@ -28,39 +35,41 @@ export class AssetRepository {
    * Gets an asset by its unique ID.
    */
   async findById(id: string): Promise<Asset | null> {
-    const asset = await db(this.tableName)
+    const row = await db(this.tableName)
       .where({ id })
       .first();
 
-    return asset || null;
+    return row ? this.mapFromDb(row) : null;
   }
 
   /**
    * Finds an asset by its name.
    */
   async findByName(name: string): Promise<Asset | null> {
-    const asset = await db(this.tableName)
+    const row = await db(this.tableName)
       .where({ name })
       .first();
 
-    return asset || null;
+    return row ? this.mapFromDb(row) : null;
   }
 
   async findByTypeAndName(type: AssetType, name: string): Promise<Asset | null> {
-    const asset = await db(this.tableName)
+    const row = await db(this.tableName)
       .where({ type, name })
       .first();
 
-    return asset || null;
+    return row ? this.mapFromDb(row) : null;
   }
 
   /**
    * Lists all assets of a specific type.
    */
   async listByType(type: AssetType): Promise<Asset[]> {
-    return db(this.tableName)
+    const rows = await db(this.tableName)
       .where({ type })
       .orderBy('created_at', 'desc');
+
+    return rows.map(r => this.mapFromDb(r));
   }
 }
 

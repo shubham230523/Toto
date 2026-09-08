@@ -23,7 +23,7 @@ export const errorHandler = (
 
   res.status(statusCode).json({
     status: 'error',
-    message: statusCode === 500 ? 'Something went wrong' : message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    message: message, // Return the actual message even for 500s during debugging
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
   });
 };

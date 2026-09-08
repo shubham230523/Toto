@@ -5,6 +5,16 @@ import { Storyboard, StoryboardRecord } from '../models/storyboard.model';
 export class StoryboardRepository {
   private readonly tableName = 'storyboards';
 
+  private mapFromDb(row: any): StoryboardRecord {
+    return {
+      ...row,
+      scenes: typeof row.scenes === 'string' ? JSON.parse(row.scenes) : row.scenes,
+      requiredAssets: typeof row.required_assets === 'string' ? JSON.parse(row.required_assets) : row.required_assets,
+      learningConcept: row.learning_concept,
+      estimatedDuration: row.estimated_duration,
+    };
+  }
+
   async create(data: Storyboard): Promise<StoryboardRecord> {
     const id = uuidv4();
     await db(this.tableName)
@@ -23,15 +33,16 @@ export class StoryboardRepository {
   }
 
   async findById(id: string): Promise<StoryboardRecord | null> {
-    const record = await db(this.tableName)
+    const row = await db(this.tableName)
       .where({ id })
       .first();
 
-    return record || null;
+    return row ? this.mapFromDb(row) : null;
   }
 
   async listAll(): Promise<StoryboardRecord[]> {
-    return db(this.tableName).orderBy('created_at', 'desc');
+    const rows = await db(this.tableName).orderBy('created_at', 'desc');
+    return rows.map(r => this.mapFromDb(r));
   }
 
   async update(id: string, data: Partial<Storyboard>): Promise<StoryboardRecord | null> {

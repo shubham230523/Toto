@@ -5,6 +5,13 @@ import { Character, CreateCharacterDto } from '../models/character.model';
 export class CharacterRepository {
   private readonly tableName = 'characters';
 
+  private mapFromDb(row: any): Character {
+    return {
+      ...row,
+      metadata: typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata,
+    };
+  }
+
   async create(data: CreateCharacterDto): Promise<Character> {
     const id = uuidv4();
     await db(this.tableName)
@@ -20,23 +27,24 @@ export class CharacterRepository {
   }
 
   async findById(id: string): Promise<Character | null> {
-    const character = await db(this.tableName)
+    const row = await db(this.tableName)
       .where({ id })
       .first();
 
-    return character || null;
+    return row ? this.mapFromDb(row) : null;
   }
 
   async findByName(name: string): Promise<Character | null> {
-    const character = await db(this.tableName)
+    const row = await db(this.tableName)
       .where({ name })
       .first();
 
-    return character || null;
+    return row ? this.mapFromDb(row) : null;
   }
 
   async listAll(): Promise<Character[]> {
-    return db(this.tableName).orderBy('name', 'asc');
+    const rows = await db(this.tableName).orderBy('name', 'asc');
+    return rows.map(r => this.mapFromDb(r));
   }
 
   /**
