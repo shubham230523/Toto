@@ -10,31 +10,47 @@ import { AppError } from '../utils/app-error';
 export class HostedImageService implements IImageGenerationService {
   private client: AxiosInstance;
   private readonly model: string;
+  private readonly isPollinations: boolean;
 
   constructor() {
-    if (!config.ai.imageProvider.url || !config.ai.imageProvider.apiKey) {
-      throw new AppError('Image provider configuration (URL or API Key) is missing', 500);
+    const url = config.ai.imageProvider.url || 'https://image.pollinations.ai/prompt';
+    this.isPollinations = url.includes('pollinations.ai');
+
+    if (!this.isPollinations && (!config.ai.imageProvider.url || !config.ai.imageProvider.apiKey)) {
+      console.warn('[HostedImageService]: Image provider not fully configured. Falling back to Pollinations.');
     }
 
     this.model = config.ai.imageProvider.model;
     this.client = axios.create({
-      baseURL: config.ai.imageProvider.url,
+      baseURL: this.isPollinations ? 'https://image.pollinations.ai/prompt' : config.ai.imageProvider.url,
       headers: {
-        'Authorization': `Bearer ${config.ai.imageProvider.apiKey}`,
+        ...(config.ai.imageProvider.apiKey ? { 'Authorization': `Bearer ${config.ai.imageProvider.apiKey}` } : {}),
         'Content-Type': 'application/json',
       },
-      timeout: 60000, // 60 seconds timeout for image generation
+      timeout: 120000, // 2 minutes timeout for image generation
     });
   }
 
-  /**
-   * Generates an image using a hosted inference API.
-   * This implementation is designed to be compatible with common patterns
-   * found in providers like Hugging Face, Replicate, or custom Stable Diffusion setups.
-   */
   async generateImage(prompt: string, options?: ImageGenerationOptions): Promise<ImageGenerationResult> {
     try {
-      // Typical payload for open-weight models (Stable Diffusion XL, etc.)
+      if (this.isPollinations) {
+        // Pollinations uses a simple GET with URL-encoded prompt
+        const encodedPrompt = encodeURIComponent(prompt);
+        const width = options?.width || 1024;
+        const height = options?.height || 1024;
+        const seed = Math.floor(Math.random() * 1000000);
+        const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
+
+        // We still fetch it to verify it works and get the buffer for the storage layer
+        const response = await axios.get(url, { responseType: 'arraybuffer' });
+
+        return {
+          url: `data:image/png;base64,${Buffer.from(response.data).toString('base64')}`,
+          revisedPrompt: prompt,
+        };
+      }
+
+      // Standard POST implementation
       const payload = {
         inputs: prompt,
         parameters: {
@@ -46,16 +62,12 @@ export class HostedImageService implements IImageGenerationService {
       };
 
       const response = await this.client.post('', payload, {
-        responseType: 'arraybuffer', // Many hosted APIs return binary image data directly
+        responseType: 'arraybuffer',
       });
 
       if (response.status !== 200) {
         throw new AppError(`Image provider returned status ${response.status}`, 502);
       }
-
-      // Note: In a real flow, we would upload this binary data to our STORAGE_URL
-      // and return that URL. For now, we return a placeholder or data URI if small.
-      // This will be handled in the asset management layer.
 
       return {
         url: `data:image/png;base64,${Buffer.from(response.data).toString('base64')}`,
@@ -73,7 +85,7 @@ export class HostedImageService implements IImageGenerationService {
         );
       }
 
-      throw new AppError('Failed to connect to image generation provider', 504);
+      throw new AppError(`Failed to connect to image generation provider: ${error.message}`, 504);
     }
   }
 }

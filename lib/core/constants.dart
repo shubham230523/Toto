@@ -1,8 +1,9 @@
 class AppConstants {
   static const String appName = 'Toto';
   
-  // API Configuration (Placeholders)
-  static const String apiBaseUrl = 'https://api.toto.example.com';
+  // API Configuration
+  // Use http://10.0.2.2:3000 for Android Emulator
+  static const String apiBaseUrl = 'http://localhost:3000';
   static const int apiTimeoutSeconds = 30;
 
   // Video Configuration (Placeholders)

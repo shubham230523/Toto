@@ -53,7 +53,8 @@ export class RenderOrchestratorService {
       console.log(`[RenderOrchestrator]: Spawning Godot for job ${jobId}`);
       jobRepository.update(jobId, { status: JobStatus.RENDERING });
 
-      const godotProcess = spawn(config.godot.binaryPath, godotArgs);
+      const binaryPath = config.godot.binaryPath.replace(/^["'](.+)["']$/, '$1');
+      const godotProcess = spawn(binaryPath, godotArgs);
 
       let renderResult: any = null;
 

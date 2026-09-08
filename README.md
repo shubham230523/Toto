@@ -667,6 +667,40 @@ The goal is simple:
 
 ---
 
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- **Flutter SDK**
+- **Node.js** (v18+)
+- **Godot 4.x** (for rendering)
+
+### 2. Backend Setup
+```bash
+cd backend
+npm install
+npm run migrate:latest
+npm run seed:run
+npm run dev
+```
+
+### 3. Render Service Setup
+1. Create `render-service/.env` based on `.env.example`.
+2. Set `GODOT_BINARY_PATH` to your Godot executable.
+3. Start the service:
+```bash
+cd render-service
+npm install
+npm run dev
+```
+
+### 4. Mobile Setup
+```bash
+flutter pub get
+flutter run
+```
+
+---
+
 ## 🚧 Development Status
 
 **Toto is currently under active development.**
