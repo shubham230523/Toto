@@ -40,7 +40,7 @@ export class RenderOrchestratorService {
 
       // 3. Prepare Godot arguments
       const outputVideoName = `${jobId}.avi`; // Rendered as AVI by Godot
-      const finalVideoName = `${jobId}.mp4`;  // Target name after storage
+      const finalVideoName = `${jobId}.avi`;  // Keep as AVI for now since we don't have FFmpeg
 
       const godotArgs = [
         '--headless',

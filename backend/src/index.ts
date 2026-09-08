@@ -17,8 +17,11 @@ const PORT = config.server.port;
 connectDB();
 
 // Middlewares
-app.use(morgan('dev')); // Logs: :method :url :status :response-time ms - :res[content-length]
+app.use(morgan('dev'));
 app.use(express.json());
+
+// Serve static files (uploads)
+app.use('/uploads', express.static(path.resolve(config.storage.path)));
 
 // Routes
 app.use(healthRoutes);

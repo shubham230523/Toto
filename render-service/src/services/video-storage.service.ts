@@ -12,17 +12,19 @@ export class VideoStorageService {
    */
   async uploadVideo(localPath: String, fileName: string): Promise<string> {
     try {
-      // In this local setup, the renderer outputs to renderer/output/
-      // We read the file and could POST it to the main backend's upload endpoint if implemented.
-      // For now, we'll return the expected public URL based on the config.
-
       const absoluteLocalPath = path.resolve(localPath.toString());
+      const destinationDir = path.resolve(__dirname, '../../', config.storage.backendUploadsPath, 'episodes');
+      const destinationPath = path.join(destinationDir, fileName);
+
+      // Ensure destination directory exists
+      await fs.mkdir(destinationDir, { recursive: true });
 
       // Verification
       await fs.access(absoluteLocalPath);
 
-      // Simulate upload delay
-      console.log(`[VideoStorage]: Uploading ${fileName} to storage...`);
+      // In this local setup, we "upload" by copying the file to the backend's uploads directory
+      console.log(`[VideoStorage]: Copying ${fileName} to ${destinationPath}...`);
+      await fs.copyFile(absoluteLocalPath, destinationPath);
 
       // return the public URL where the file will be accessible
       return `${config.storage.uploadUrl}/episodes/${fileName}`;

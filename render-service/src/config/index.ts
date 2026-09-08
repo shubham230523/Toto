@@ -12,6 +12,7 @@ export const config = {
   },
   storage: {
     uploadUrl: process.env.STORAGE_UPLOAD_URL || 'http://localhost:3000/uploads',
+    backendUploadsPath: process.env.BACKEND_UPLOADS_PATH || '../backend/uploads',
   },
   backend: {
     apiUrl: process.env.BACKEND_API_URL || 'http://localhost:3000',
