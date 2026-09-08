@@ -8,6 +8,9 @@ import '../core/constants.dart';
 
 class VideoCacheService {
   static const String _cacheFolderName = 'episode_cache';
+  final http.Client _client;
+
+  VideoCacheService({http.Client? client}) : _client = client ?? http.Client();
 
   /// Gets a cached video file or downloads it if it doesn't exist.
   Future<File?> getCachedVideo(String url) async {
@@ -24,8 +27,8 @@ class VideoCacheService {
       }
 
       // Download to a temporary file first to avoid corrupted cache on interruption
-      final tempFile = File(p.join(directory.path, '${fileName}.tmp'));
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(minutes: 5));
+      final tempFile = File(p.join(directory.path, '$fileName.tmp'));
+      final response = await _client.get(Uri.parse(url)).timeout(const Duration(minutes: 5));
       
       if (response.statusCode == 200) {
         await tempFile.writeAsBytes(response.bodyBytes);

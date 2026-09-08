@@ -4,14 +4,17 @@ import '../core/constants.dart';
 import '../models/episode.dart';
 
 class ApiService {
+  final http.Client _client;
   final String _baseUrl = AppConstants.apiBaseUrl;
+
+  ApiService({http.Client? client}) : _client = client ?? http.Client();
 
   /// Fetches a random ready episode from the backend with a timeout.
   /// [excludeIds] Optional list of episode IDs to avoid.
   Future<Episode?> getRandomEpisode({List<String> excludeIds = const []}) async {
     try {
       final queryParams = excludeIds.isNotEmpty ? '?exclude=${excludeIds.join(',')}' : '';
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('$_baseUrl/episodes/random$queryParams'),
       ).timeout(const Duration(seconds: 10));
 

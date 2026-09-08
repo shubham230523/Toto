@@ -267,9 +267,8 @@ func _preload_assets(assets: Array) -> void:
 		if url == "" or name == "": continue
 
 		# In a real setup, we might download the file from the URL first.
-		# For this local prototype, if it's a relative path starting with 'uploads/',
-		# we map it to our backend's uploads directory.
-		var local_path = url.replace("http://localhost:3000/uploads", "../../backend/uploads")
+		# For this local prototype, we map the backend URL to a path relative to the project.
+		var local_path = url.replace("http://localhost:3000/uploads", ProjectSettings.globalize_path("res://") + "../backend/uploads")
 
 		if type == "audio":
 			var audio = AssetLoader.load_audio(local_path)
