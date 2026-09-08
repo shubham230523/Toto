@@ -20,18 +20,13 @@ export class AssetGeneratorService {
       throw new AppError(`Character bible for "${name}" not found`, 404);
     }
 
+    // Extract just the first section of the bible (Appearance) to keep the URL short
+    const appearanceSection = bibleContent.split('## 2.')[0] || bibleContent.substring(0, 500);
+
     const imagePrompt = `
-      Create a high-quality, professional 2D vector-style cartoon character asset for a children's animation series.
-      Character: ${name}
-      Details from Character Bible:
-      ${bibleContent}
-      Requirements:
-      - Full body shot, neutral T-pose or friendly standing pose.
-      - Clean, thick outlines (darker than fill colors).
-      - Soft minimalist gradients.
-      - Solid white background (for easy removal).
-      - High resolution, 2D vector aesthetic.
-      - Toddler-friendly, cute, and gentle.
+      2D vector cartoon, children's book style. Character: ${name}.
+      Details: ${appearanceSection.replace(/#|🐢|🐻|🐰/g, '').trim()}
+      Full body, thick clean outlines, white background, toddler-friendly, cute.
     `;
 
     const generationResult = await hostedImageService.generateImage(imagePrompt, { width: 1024, height: 1024 });
@@ -58,16 +53,13 @@ export class AssetGeneratorService {
       throw new AppError(`Character bible for "${characterName}" not found`, 404);
     }
 
+    const appearanceSection = bibleContent.split('## 2.')[0] || bibleContent.substring(0, 300);
+
     const imagePrompt = `
-      Create a high-quality 2D vector-style cartoon asset of ${characterName}'s face showing a ${expression.toUpperCase()} expression.
-      Character Bible Context:
-      ${bibleContent}
-      Expression Requirements:
-      - Current Expression: ${expression.toUpperCase()}
-      - Maintain exactly the same colors, line thickness, and character design as defined in the bible.
-      - Close-up or medium shot of the head/face to capture the expression details.
-      - Clean, thick outlines.
-      - Solid white background.
+      2D vector cartoon, headshot. Character: ${characterName}.
+      Expression: ${expression.toUpperCase()}.
+      Details: ${appearanceSection.replace(/#|🐢|🐻|🐰/g, '').trim()}
+      Thick outlines, white background, cute.
     `;
 
     const generationResult = await hostedImageService.generateImage(imagePrompt, { width: 1024, height: 1024 });

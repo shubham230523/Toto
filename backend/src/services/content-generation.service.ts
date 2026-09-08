@@ -130,6 +130,9 @@ export class ContentGenerationService {
       };
     } catch (error: any) {
       console.error(`[ContentGeneration]: Complete generation failed!`, error);
+      // Attempt to set status to FAILED if we have an episode record
+      // We don't have easy access to the ID here if it failed early, but we can try to find the latest generating one if needed
+      // For now, we'll just throw and let the caller handle it.
       throw error;
     }
   }
