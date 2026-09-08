@@ -6,7 +6,7 @@
 
 Instead of presenting children with menus, lessons, quizzes, feeds, or complicated interfaces, Toto puts the child directly inside a world of short, colorful, entertaining stories.
 
-> **Open Toto. Discover a story. Learn without realizing you're learning.**
+> **Open Toto.  Discover a story. Learn without realizing you're learning.**
 
 ---
 
