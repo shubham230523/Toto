@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { db } from '../config/database';
 import { Character, CreateCharacterDto } from '../models/character.model';
 
@@ -5,13 +6,16 @@ export class CharacterRepository {
   private readonly tableName = 'characters';
 
   async create(data: CreateCharacterDto): Promise<Character> {
-    const [character] = await db(this.tableName)
+    const id = uuidv4();
+    await db(this.tableName)
       .insert({
         ...data,
+        id,
         metadata: JSON.stringify(data.metadata || {}),
-      })
-      .returning('*');
+      });
 
+    const character = await this.findById(id);
+    if (!character) throw new Error('Failed to create character');
     return character;
   }
 

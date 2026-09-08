@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { db } from '../config/database';
 import { Story, CreateStoryDto } from '../models/story.model';
 
@@ -5,16 +6,19 @@ export class StoryRepository {
   private readonly tableName = 'stories';
 
   async create(data: CreateStoryDto): Promise<Story> {
-    const [story] = await db(this.tableName)
+    const id = uuidv4();
+    await db(this.tableName)
       .insert({
+        id,
         title: data.title,
         learning_concept: data.learningConcept,
         characters: JSON.stringify(data.characters),
         scenes: JSON.stringify(data.scenes),
         estimated_duration: data.estimatedDuration,
-      })
-      .returning('*');
+      });
 
+    const story = await this.findById(id);
+    if (!story) throw new Error('Failed to create story');
     return story;
   }
 

@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { db } from '../config/database';
 import { Storyboard, StoryboardRecord } from '../models/storyboard.model';
 
@@ -5,16 +6,19 @@ export class StoryboardRepository {
   private readonly tableName = 'storyboards';
 
   async create(data: Storyboard): Promise<StoryboardRecord> {
-    const [record] = await db(this.tableName)
+    const id = uuidv4();
+    await db(this.tableName)
       .insert({
+        id,
         title: data.title,
         learning_concept: data.learningConcept,
         scenes: JSON.stringify(data.scenes),
         required_assets: JSON.stringify(data.requiredAssets),
         estimated_duration: data.estimatedDuration,
-      })
-      .returning('*');
+      });
 
+    const record = await this.findById(id);
+    if (!record) throw new Error('Failed to create storyboard');
     return record;
   }
 
@@ -48,12 +52,11 @@ export class StoryboardRepository {
       delete updateData.estimatedDuration;
     }
 
-    const [record] = await db(this.tableName)
+    await db(this.tableName)
       .where({ id })
-      .update(updateData)
-      .returning('*');
+      .update(updateData);
 
-    return record || null;
+    return this.findById(id);
   }
 }
 

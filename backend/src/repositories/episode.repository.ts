@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { db } from '../config/database';
 import { Episode, EpisodeStatus, CreateEpisodeDto } from '../models/episode.model';
 import { characterRepository } from './character.repository';
@@ -9,16 +10,19 @@ export class EpisodeRepository {
    * Creates a new episode record.
    */
   async create(data: CreateEpisodeDto): Promise<Episode> {
-    const [episode] = await db(this.tableName)
+    const id = uuidv4();
+    await db(this.tableName)
       .insert({
+        id,
         title: data.title,
         video_url: data.video_url,
         duration: data.duration,
         characters: JSON.stringify(data.characters || []),
         status: data.status || EpisodeStatus.GENERATING,
-      })
-      .returning('*');
+      });
 
+    const episode = await this.findById(id);
+    if (!episode) throw new Error('Failed to create episode');
     return episode;
   }
 
@@ -46,12 +50,11 @@ export class EpisodeRepository {
    * Updates an existing episode.
    */
   async update(id: string, data: Partial<Episode>): Promise<Episode | null> {
-    const [episode] = await db(this.tableName)
+    await db(this.tableName)
       .where({ id })
-      .update(data)
-      .returning('*');
+      .update(data);
 
-    return episode || null;
+    return this.findById(id);
   }
 
   /**
@@ -80,8 +83,7 @@ export class EpisodeRepository {
     // Calculate total weights for each episode
     const episodeWeights = episodes.map(ep => {
       let weight = 0;
-      // ep.characters is a JSONB array of strings
-      // Note: Knex/PG might return it as a string or an object depending on driver/setup
+      // ep.characters is a JSON array of strings
       const names = typeof ep.characters === 'string' ? JSON.parse(ep.characters) : ep.characters;
       const namesList = Array.isArray(names) ? names : [];
 

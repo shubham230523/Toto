@@ -2,11 +2,11 @@ import { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('assets', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+    table.uuid('id').primary();
     table.text('name').notNullable();
     table.string('type').notNullable(); // character, background, object, expression, audio
     table.text('url').notNullable();
-    table.jsonb('metadata').notNullable().defaultTo('{}');
+    table.json('metadata').notNullable().defaultTo('{}');
     table.timestamp('created_at').defaultTo(knex.fn.now());
 
     // Explicit indexes for fast lookups

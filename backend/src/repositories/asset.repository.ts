@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { db } from '../config/database';
 import { Asset, AssetType, CreateAssetDto } from '../models/asset.model';
 
@@ -8,15 +9,18 @@ export class AssetRepository {
    * Creates a new asset record.
    */
   async create(data: CreateAssetDto): Promise<Asset> {
-    const [asset] = await db(this.tableName)
+    const id = uuidv4();
+    await db(this.tableName)
       .insert({
+        id,
         name: data.name,
         type: data.type,
         url: data.url,
         metadata: JSON.stringify(data.metadata || {}),
-      })
-      .returning('*');
+      });
 
+    const asset = await this.findById(id);
+    if (!asset) throw new Error('Failed to create asset');
     return asset;
   }
 
@@ -33,8 +37,6 @@ export class AssetRepository {
 
   /**
    * Finds an asset by its name.
-   * Since multiple assets might have the same name (e.g., across different types),
-   * this returns the first match.
    */
   async findByName(name: string): Promise<Asset | null> {
     const asset = await db(this.tableName)

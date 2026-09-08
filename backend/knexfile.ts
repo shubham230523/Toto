@@ -5,8 +5,11 @@ dotenv.config();
 
 const config: { [key: string]: Knex.Config } = {
   development: {
-    client: "postgresql",
-    connection: process.env.DATABASE_URL,
+    client: "sqlite3",
+    connection: {
+      filename: process.env.DATABASE_URL || "./toto.sqlite"
+    },
+    useNullAsDefault: true,
     migrations: {
       directory: "./src/database/migrations",
       tableName: "knex_migrations"
@@ -16,12 +19,11 @@ const config: { [key: string]: Knex.Config } = {
     }
   },
   production: {
-    client: "postgresql",
-    connection: process.env.DATABASE_URL,
-    pool: {
-      min: 2,
-      max: 10
+    client: "sqlite3",
+    connection: {
+      filename: process.env.DATABASE_URL || "./toto.sqlite"
     },
+    useNullAsDefault: true,
     migrations: {
       directory: "./src/database/migrations",
       tableName: "knex_migrations"
