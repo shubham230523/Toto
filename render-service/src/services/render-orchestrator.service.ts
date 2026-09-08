@@ -44,6 +44,7 @@ export class RenderOrchestratorService {
 
       const godotArgs = [
         '--headless',
+        '--rendering-driver', 'opengl3',
         '--path', path.resolve(config.godot.projectPath),
         '--write-movie', path.join(path.resolve(config.godot.projectPath), `output/${outputVideoName}`),
         '--',
@@ -60,6 +61,7 @@ export class RenderOrchestratorService {
 
       godotProcess.stdout.on('data', (data) => {
         const output = data.toString();
+        process.stdout.write(`[Godot STDOUT]: ${output}`); // Log Godot output for debugging
         if (output.includes('RENDER_RESULT:')) {
             try {
               const resultStr = output.split('RENDER_RESULT:')[1].trim();
@@ -68,6 +70,10 @@ export class RenderOrchestratorService {
               console.error(`[RenderOrchestrator]: Failed to parse render result for job ${jobId}`, e);
             }
         }
+      });
+
+      godotProcess.stderr.on('data', (data) => {
+        console.error(`[Godot STDERR]: ${data.toString()}`);
       });
 
       godotProcess.on('close', async (code) => {
