@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { geminiService } from '../services/gemini.service';
+import { openRouterService } from '../services/openrouter.service';
 import { assetGeneratorService } from '../services/asset-generator.service';
 import { contentGenerationService } from '../services/content-generation.service';
 import { characterRepository } from '../repositories/character.repository';
@@ -29,7 +29,7 @@ router.post('/content/stories/generate', async (req: Request, res: Response, nex
     const characters = await characterRepository.listAll();
     const prompt = getStoryGenerationPrompt(learningConcept, characters.map(c => c.name));
 
-    const storyData = await geminiService.generateJson<CreateStoryDto>(prompt);
+    const storyData = await openRouterService.generateJson<CreateStoryDto>(prompt);
     validateGeneratedStory(storyData, characters.map(c => c.name));
 
     const story = await storyRepository.create(storyData);
@@ -61,8 +61,8 @@ router.post('/content/storyboards/generate', async (req: Request, res: Response,
     // 2. Build Director AI prompt
     const prompt = getStoryboardGenerationPrompt(story);
 
-    // 3. Call Gemini
-    const storyboardData = await geminiService.generateJson<Storyboard>(prompt);
+    // 3. Call OpenRouter
+    const storyboardData = await openRouterService.generateJson<Storyboard>(prompt);
 
     // 4. Validate
     validateGeneratedStoryboard(storyboardData);

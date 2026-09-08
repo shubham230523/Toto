@@ -2,7 +2,7 @@ import axios from 'axios';
 import { config } from '../config';
 import { safetyValidatorService } from './safety-validator.service';
 import { localStorageService } from './local-storage.service';
-import { geminiService } from './gemini.service';
+import { openRouterService } from './openrouter.service';
 import { assetResolver } from './asset-resolver.service';
 import { characterRepository } from '../repositories/character.repository';
 import { storyRepository } from '../repositories/story.repository';
@@ -36,7 +36,7 @@ export class ContentGenerationService {
     const characterNames = characters.map(c => c.name);
 
     const storyPrompt = getStoryGenerationPrompt(learningConcept, characterNames);
-    const storyData = await geminiService.generateJson<CreateStoryDto>(storyPrompt);
+    const storyData = await openRouterService.generateJson<CreateStoryDto>(storyPrompt);
 
     // 3. Story Validation
     validateGeneratedStory(storyData, characterNames);
@@ -58,7 +58,7 @@ export class ContentGenerationService {
 
     // 4. Storyboard Generation
     const storyboardPrompt = getStoryboardGenerationPrompt(story);
-    const storyboardData = await geminiService.generateJson<Storyboard>(storyboardPrompt);
+    const storyboardData = await openRouterService.generateJson<Storyboard>(storyboardPrompt);
 
     // 5. Storyboard Validation
     validateGeneratedStoryboard(storyboardData);

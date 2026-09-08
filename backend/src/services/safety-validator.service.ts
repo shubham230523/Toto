@@ -1,4 +1,4 @@
-import { geminiService } from './gemini.service';
+import { openRouterService } from './openrouter.service';
 import { CreateStoryDto } from '../models/story.model';
 
 export interface SafetyResult {
@@ -15,7 +15,7 @@ export class SafetyValidatorService {
     const safetyPrompt = this.buildSafetyPrompt(story);
 
     try {
-      const result = await geminiService.generateJson<SafetyResult>(safetyPrompt);
+      const result = await openRouterService.generateJson<SafetyResult>(safetyPrompt);
 
       if (typeof result.isSafe !== 'boolean') {
         throw new Error('Invalid safety check response');

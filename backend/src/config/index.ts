@@ -15,6 +15,11 @@ export const config = {
     path: process.env.STORAGE_PATH || './uploads',
   },
   ai: {
+    openRouter: {
+      apiKey: process.env.OPENROUTER_API_KEY || '',
+      baseUrl: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',
+      model: process.env.OPENROUTER_MODEL || 'google/gemini-flash-1.5-8b:free',
+    },
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     geminiModel: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
     imageProvider: {
