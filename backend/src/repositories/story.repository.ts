@@ -14,6 +14,7 @@ export class StoryRepository {
         learning_concept: data.learningConcept,
         characters: JSON.stringify(data.characters),
         scenes: JSON.stringify(data.scenes),
+        dialogue: JSON.stringify(data.dialogue),
         estimated_duration: data.estimatedDuration,
       });
 
