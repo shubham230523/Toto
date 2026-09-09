@@ -1,0 +1,559 @@
+{
+  "episode": {
+    "id": "a38ae030-e538-4e77-81ac-5de78a8fcbd1",
+    "title": "Toto and the Colorful Flower",
+    "video_url": null,
+    "duration": null,
+    "characters": [],
+    "status": "generating",
+    "created_at": "2026-09-09 11:52:15"
+  },
+  "story": {
+    "id": "c38d4a1f-e941-46ec-92d3-a20154ca387a",
+    "title": "Toto and the Colorful Flower",
+    "learning_concept": "Toto finds a colorful flower",
+    "characters": [
+      "Toto",
+      "Bobo",
+      "Mimi"
+    ],
+    "scenes": [
+      {
+        "description": "Toto the turtle slowly walks across a soft green meadow, feeling the gentle breeze.",
+        "setting": "A sunny meadow with soft grass, gentle clouds, and colorful butterflies.",
+        "duration": 15
+      },
+      {
+        "description": "Toto spots a bright red and yellow flower swaying nearby and tilts his head curiously.",
+        "setting": "A close-up garden patch with blooming flowers glowing in the sunlight.",
+        "duration": 15
+      },
+      {
+        "description": "Toto nuzzles the flower happily, and Bobo and Mimi join in, smiling and celebrating the discovery.",
+        "setting": "The meadow warms up with golden light as the friends laugh together.",
+        "duration": 15
+      }
+    ],
+    "estimated_duration": 45,
+    "created_at": "2026-09-09 11:54:25",
+    "dialogue": [
+      {
+        "characterName": "Toto",
+        "text": "Look! A flower!"
+      },
+      {
+        "characterName": "Bobo",
+        "text": "It's so pretty!"
+      },
+      {
+        "characterName": "Mimi",
+        "text": "Let's smell it gently."
+      },
+      {
+        "characterName": "Toto",
+        "text": "Yes! Yay!"
+      }
+    ],
+    "learningConcept": "Toto finds a colorful flower",
+    "estimatedDuration": 45
+  },
+  "storyboard": {
+    "id": "1f1ef9c8-9288-4b7f-ab72-76d168541835",
+    "title": "Toto and the Colorful Flower",
+    "learning_concept": "Toto finds a colorful flower",
+    "scenes": [
+      {
+        "background": "background_sunny_meadow",
+        "duration": 15,
+        "characters": [
+          "Toto"
+        ],
+        "objects": [],
+        "dialogue": [
+          {
+            "characterName": "Toto",
+            "text": "What a gentle breeze!"
+          }
+        ],
+        "actions": [
+          {
+            "type": "MOVE",
+            "target": "Toto",
+            "params": {
+              "from": {
+                "x": 200,
+                "y": 550
+              },
+              "to": {
+                "x": 1700,
+                "y": 550
+              }
+            },
+            "startTime": 0,
+            "duration": 12
+          },
+          {
+            "type": "PLAY_SOUND",
+            "target": "scene",
+            "params": {
+              "sound": "audio_breeze"
+            },
+            "startTime": 0,
+            "duration": 3
+          },
+          {
+            "type": "WAIT",
+            "target": "Toto",
+            "params": {},
+            "startTime": 12,
+            "duration": 3
+          }
+        ]
+      },
+      {
+        "background": "background_garden_patch",
+        "duration": 15,
+        "characters": [
+          "Toto"
+        ],
+        "objects": [
+          "object_colorful_flower"
+        ],
+        "dialogue": [
+          {
+            "characterName": "Toto",
+            "text": "Wow, a colorful flower!"
+          }
+        ],
+        "actions": [
+          {
+            "type": "SHOW",
+            "target": "object_colorful_flower",
+            "params": {
+              "x": 960,
+              "y": 500
+            },
+            "startTime": 0,
+            "duration": 1
+          },
+          {
+            "type": "SPEAK",
+            "target": "Toto",
+            "params": {
+              "sound": "audio_toto_wonder"
+            },
+            "startTime": 0.5,
+            "duration": 2
+          },
+          {
+            "type": "ANIMATE",
+            "target": "Toto",
+            "params": {
+              "action": "tiltHead",
+              "degree": 30
+            },
+            "startTime": 1,
+            "duration": 1.5
+          },
+          {
+            "type": "PLAY_SOUND",
+            "target": "scene",
+            "params": {
+              "sound": "audio_breeze"
+            },
+            "startTime": 2,
+            "duration": 2
+          },
+          {
+            "type": "WAIT",
+            "target": "Toto",
+            "params": {},
+            "startTime": 5,
+            "duration": 10
+          }
+        ]
+      },
+      {
+        "background": "background_golden_meadow",
+        "duration": 15,
+        "characters": [
+          "Toto",
+          "Bobo",
+          "Mimi"
+        ],
+        "objects": [
+          "object_colorful_flower"
+        ],
+        "dialogue": [
+          {
+            "characterName": "Toto",
+            "text": "Look what I found!"
+          },
+          {
+            "characterName": "Bobo",
+            "text": "Yay!"
+          },
+          {
+            "characterName": "Mimi",
+            "text": "So beautiful!"
+          }
+        ],
+        "actions": [
+          {
+            "type": "SPEAK",
+            "target": "Toto",
+            "params": {
+              "sound": "audio_toto_found"
+            },
+            "startTime": 0,
+            "duration": 2
+          },
+          {
+            "type": "SPEAK",
+            "target": "Bobo",
+            "params": {
+              "sound": "audio_bobo_yay"
+            },
+            "startTime": 1.5,
+            "duration": 2
+          },
+          {
+            "type": "SPEAK",
+            "target": "Mimi",
+            "params": {
+              "sound": "audio_mimi_beautiful"
+            },
+            "startTime": 3,
+            "duration": 2
+          },
+          {
+            "type": "ANIMATE",
+            "target": "Toto",
+            "params": {
+              "action": "nuzzle",
+              "object": "object_colorful_flower"
+            },
+            "startTime": 0,
+            "duration": 2
+          },
+          {
+            "type": "ANIMATE",
+            "target": "Bobo",
+            "params": {
+              "action": "jump",
+              "height": 50
+            },
+            "startTime": 2,
+            "duration": 1.5
+          },
+          {
+            "type": "ANIMATE",
+            "target": "Mimi",
+            "params": {
+              "action": "twirl",
+              "speed": 1
+            },
+            "startTime": 3.5,
+            "duration": 1.5
+          },
+          {
+            "type": "PLAY_SOUND",
+            "target": "scene",
+            "params": {
+              "sound": "audio_cheers"
+            },
+            "startTime": 5,
+            "duration": 2
+          },
+          {
+            "type": "WAIT",
+            "target": "characters",
+            "params": {},
+            "startTime": 8,
+            "duration": 7
+          }
+        ]
+      }
+    ],
+    "required_assets": "[{\"name\":\"audio_toto_wonder\",\"type\":\"audio\",\"metadata\":{\"text\":\"Wow, a colorful flower!\",\"characterName\":\"Toto\"},\"url\":\"http://localhost:3000/uploads/audio/audio_audio_toto_wonder.mp3\"},{\"name\":\"audio_bobo_yay\",\"type\":\"audio\",\"metadata\":{\"text\":\"Yay!\",\"characterName\":\"Bobo\"},\"url\":\"http://localhost:3000/uploads/audio/audio_audio_bobo_yay.mp3\"},{\"name\":\"audio_mimi_beautiful\",\"type\":\"audio\",\"metadata\":{\"text\":\"So beautiful!\",\"characterName\":\"Mimi\"},\"url\":\"http://localhost:3000/uploads/audio/audio_audio_mimi_beautiful.mp3\"},{\"name\":\"audio_toto_found\",\"type\":\"audio\",\"metadata\":{\"text\":\"Look what I found!\",\"characterName\":\"Toto\"},\"url\":\"http://localhost:3000/uploads/audio/audio_audio_toto_found.mp3\"},{\"name\":\"audio_breeze\",\"type\":\"audio\",\"metadata\":{\"text\":\"Gentle wind sound\",\"characterName\":\"\"},\"url\":\"http://localhost:3000/uploads/audio/audio_audio_breeze.mp3\"},{\"name\":\"audio_cheers\",\"type\":\"audio\",\"metadata\":{\"text\":\"Celebration cheers\",\"characterName\":\"\"},\"url\":\"http://localhost:3000/uploads/audio/audio_audio_cheers.mp3\"},{\"name\":\"background_sunny_meadow\",\"type\":\"background\",\"metadata\":{\"description\":\"Sunny meadow with soft grass, clouds, and butterflies\"},\"url\":\"http://localhost:3000/uploads/backgrounds/bg_background_sunny_meadow.jpg\"},{\"name\":\"background_garden_patch\",\"type\":\"background\",\"metadata\":{\"description\":\"Close-up garden patch with blooming red and yellow flowers\"},\"url\":\"http://localhost:3000/uploads/backgrounds/bg_background_garden_patch.jpg\"},{\"name\":\"background_golden_meadow\",\"type\":\"background\",\"metadata\":{\"description\":\"Meadow warmed up with golden light\"},\"url\":\"http://localhost:3000/uploads/backgrounds/bg_background_golden_meadow.jpg\"},{\"name\":\"object_colorful_flower\",\"type\":\"object\",\"metadata\":{\"colors\":\"red and yellow\",\"style\":\"swaying\"},\"url\":\"http://localhost:3000/uploads/objects/obj_object_colorful_flower.jpg\"},{\"name\":\"character_Toto\",\"type\":\"character\",\"metadata\":{\"species\":\"turtle\",\"name\":\"Toto\"}},{\"name\":\"character_Bobo\",\"type\":\"character\",\"metadata\":{\"species\":\"rabbit\",\"name\":\"Bobo\"}},{\"name\":\"character_Mimi\",\"type\":\"character\",\"metadata\":{\"species\":\"bird\",\"name\":\"Mimi\"}}]",
+    "estimated_duration": 45,
+    "created_at": "2026-09-09 11:59:29",
+    "requiredAssets": [
+      {
+        "name": "audio_toto_wonder",
+        "type": "audio",
+        "metadata": {
+          "text": "Wow, a colorful flower!",
+          "characterName": "Toto"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_audio_toto_wonder.mp3"
+      },
+      {
+        "name": "audio_bobo_yay",
+        "type": "audio",
+        "metadata": {
+          "text": "Yay!",
+          "characterName": "Bobo"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_audio_bobo_yay.mp3"
+      },
+      {
+        "name": "audio_mimi_beautiful",
+        "type": "audio",
+        "metadata": {
+          "text": "So beautiful!",
+          "characterName": "Mimi"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_audio_mimi_beautiful.mp3"
+      },
+      {
+        "name": "audio_toto_found",
+        "type": "audio",
+        "metadata": {
+          "text": "Look what I found!",
+          "characterName": "Toto"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_audio_toto_found.mp3"
+      },
+      {
+        "name": "audio_breeze",
+        "type": "audio",
+        "metadata": {
+          "text": "Gentle wind sound",
+          "characterName": ""
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_audio_breeze.mp3"
+      },
+      {
+        "name": "audio_cheers",
+        "type": "audio",
+        "metadata": {
+          "text": "Celebration cheers",
+          "characterName": ""
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_audio_cheers.mp3"
+      },
+      {
+        "name": "background_sunny_meadow",
+        "type": "background",
+        "metadata": {
+          "description": "Sunny meadow with soft grass, clouds, and butterflies"
+        },
+        "url": "http://localhost:3000/uploads/backgrounds/bg_background_sunny_meadow.jpg"
+      },
+      {
+        "name": "background_garden_patch",
+        "type": "background",
+        "metadata": {
+          "description": "Close-up garden patch with blooming red and yellow flowers"
+        },
+        "url": "http://localhost:3000/uploads/backgrounds/bg_background_garden_patch.jpg"
+      },
+      {
+        "name": "background_golden_meadow",
+        "type": "background",
+        "metadata": {
+          "description": "Meadow warmed up with golden light"
+        },
+        "url": "http://localhost:3000/uploads/backgrounds/bg_background_golden_meadow.jpg"
+      },
+      {
+        "name": "object_colorful_flower",
+        "type": "object",
+        "metadata": {
+          "colors": "red and yellow",
+          "style": "swaying"
+        },
+        "url": "http://localhost:3000/uploads/objects/obj_object_colorful_flower.jpg"
+      },
+      {
+        "name": "character_Toto",
+        "type": "character",
+        "metadata": {
+          "species": "turtle",
+          "name": "Toto"
+        }
+      },
+      {
+        "name": "character_Bobo",
+        "type": "character",
+        "metadata": {
+          "species": "rabbit",
+          "name": "Bobo"
+        }
+      },
+      {
+        "name": "character_Mimi",
+        "type": "character",
+        "metadata": {
+          "species": "bird",
+          "name": "Mimi"
+        }
+      }
+    ],
+    "learningConcept": "Toto finds a colorful flower",
+    "estimatedDuration": 45
+  },
+  "characters": [
+    {
+      "id": null,
+      "name": "Bobo",
+      "species": "Bear",
+      "personality": "Playful, energetic, and a bit clumsy. Loves honey and big bear hugs.",
+      "appearance": "A fluffy brown bear cub with a blue scarf.",
+      "metadata": {
+        "role": "Secondary",
+        "traits": [
+          "energetic",
+          "clumsy",
+          "sweet"
+        ]
+      },
+      "created_at": "2026-09-09 11:48:40",
+      "weight": 30
+    },
+    {
+      "id": null,
+      "name": "Mimi",
+      "species": "Rabbit",
+      "personality": "Energetic, fast-talking, and loves colors.",
+      "appearance": "A white rabbit with a pink bow.",
+      "metadata": {
+        "role": "Secondary",
+        "traits": [
+          "fast",
+          "colorful",
+          "bright"
+        ]
+      },
+      "created_at": "2026-09-09 11:48:40",
+      "weight": 30
+    },
+    {
+      "id": null,
+      "name": "Toto",
+      "species": "Turtle",
+      "personality": "Thoughtful, curious, and gentle. Loves exploring at a slow and steady pace. Always notices the tiny details like a unique flower or a shiny pebble.",
+      "appearance": "A small, bright green turtle with a soft-edged, patterned shell in earth tones. Big, friendly brown eyes and a small, warm smile. Moves with cute, slightly clumsy steps.",
+      "metadata": {
+        "role": "Protagonist",
+        "age_group": "Toddler",
+        "primary_color": "Green",
+        "is_canonical": true,
+        "traits": [
+          "slow",
+          "observant",
+          "kind"
+        ]
+      },
+      "created_at": "2026-09-09 11:48:40",
+      "weight": 40
+    }
+  ],
+  "assets": [
+    {
+      "id": "b93002aa-980d-4393-b518-33afe24f741a",
+      "name": "audio_toto_wonder",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_audio_toto_wonder.mp3",
+      "metadata": {
+        "text": "Wow, a colorful flower!"
+      },
+      "created_at": "2026-09-09 11:59:29"
+    },
+    {
+      "id": "20419e76-4b6c-4cda-902b-4bc78123e861",
+      "name": "audio_bobo_yay",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_audio_bobo_yay.mp3",
+      "metadata": {
+        "text": "Yay!"
+      },
+      "created_at": "2026-09-09 11:59:30"
+    },
+    {
+      "id": "1168e6e6-97f4-48fa-9ed0-919187c6c682",
+      "name": "audio_mimi_beautiful",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_audio_mimi_beautiful.mp3",
+      "metadata": {
+        "text": "So beautiful!"
+      },
+      "created_at": "2026-09-09 11:59:30"
+    },
+    {
+      "id": "b5a649d6-dda1-4bb2-a1ed-f43ea19fac20",
+      "name": "audio_toto_found",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_audio_toto_found.mp3",
+      "metadata": {
+        "text": "Look what I found!"
+      },
+      "created_at": "2026-09-09 11:59:30"
+    },
+    {
+      "id": "03d0aaf5-20fe-4219-ab2c-f72cfa907b40",
+      "name": "audio_breeze",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_audio_breeze.mp3",
+      "metadata": {
+        "text": "Gentle wind sound"
+      },
+      "created_at": "2026-09-09 11:59:31"
+    },
+    {
+      "id": "72ccbe93-b4be-43d5-9896-2213d379df5e",
+      "name": "audio_cheers",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_audio_cheers.mp3",
+      "metadata": {
+        "text": "Celebration cheers"
+      },
+      "created_at": "2026-09-09 11:59:31"
+    },
+    {
+      "id": "f19b8870-6ae4-4845-9104-3b116e92638e",
+      "name": "background_sunny_meadow",
+      "type": "background",
+      "url": "http://localhost:3000/uploads/backgrounds/bg_background_sunny_meadow.jpg",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon background for a children's animation series.\n      Theme: background_sunny_meadow\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Bright, cheerful colors and soft lighting.\n      - Flat perspective or simple 2.5D, optimized for Godot scene composition.\n      - No characters.\n      - Solid detail on scenery, simplified for animation.\n    ",
+        "style": "2d-cartoon"
+      },
+      "created_at": "2026-09-09 11:59:34"
+    },
+    {
+      "id": "cea7fa28-c6c3-4c31-80fd-f0d878ab88b1",
+      "name": "background_garden_patch",
+      "type": "background",
+      "url": "http://localhost:3000/uploads/backgrounds/bg_background_garden_patch.jpg",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon background for a children's animation series.\n      Theme: background_garden_patch\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Bright, cheerful colors and soft lighting.\n      - Flat perspective or simple 2.5D, optimized for Godot scene composition.\n      - No characters.\n      - Solid detail on scenery, simplified for animation.\n    ",
+        "style": "2d-cartoon"
+      },
+      "created_at": "2026-09-09 12:00:19"
+    },
+    {
+      "id": "4e009759-5941-44ce-b03e-4bb7a2f70239",
+      "name": "background_golden_meadow",
+      "type": "background",
+      "url": "http://localhost:3000/uploads/backgrounds/bg_background_golden_meadow.jpg",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon background for a children's animation series.\n      Theme: background_golden_meadow\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Bright, cheerful colors and soft lighting.\n      - Flat perspective or simple 2.5D, optimized for Godot scene composition.\n      - No characters.\n      - Solid detail on scenery, simplified for animation.\n    ",
+        "style": "2d-cartoon"
+      },
+      "created_at": "2026-09-09 12:01:04"
+    },
+    {
+      "id": "28715c8b-5234-4b36-a315-fbd47bd338b4",
+      "name": "object_colorful_flower",
+      "type": "object",
+      "url": "http://localhost:3000/uploads/objects/obj_object_colorful_flower.jpg",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon object asset for a children's animation series.\n      Object: object_colorful_flower\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Single object centered.\n      - Bright, vibrant, toddler-friendly colors.\n      - Thick, clean outlines.\n      - Solid white background.\n    ",
+        "object_type": "object_colorful_flower"
+      },
+      "created_at": "2026-09-09 12:01:49"
+    }
+  ]
+}

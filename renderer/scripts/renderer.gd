@@ -88,11 +88,17 @@ func play_sound(sound_name: String, wait_until_finished: bool = false) -> void:
 
 	# If exact name not found or is a texture, try to find an audio asset that contains the name
 	if not stream or not stream is AudioStream:
+		print("[renderer]: sound_name '", sound_name, "' not found directly. Searching registry...")
 		for key in _resource_registry:
 			var res = _resource_registry[key]
-			if res is AudioStream and (key.contains(sound_name) or sound_name.contains(key)):
-				stream = res
-				break
+			if res is AudioStream:
+				# Use lowercase for case-insensitive comparison
+				var k_low = key.to_lower()
+				var s_low = sound_name.to_lower()
+				if k_low.contains(s_low) or s_low.contains(k_low):
+					print("[renderer]: Fuzzy match found: '", key, "' for '", sound_name, "'")
+					stream = res
+					break
 
 	if stream and stream is AudioStream:
 		audio_player.stream = stream
@@ -101,6 +107,7 @@ func play_sound(sound_name: String, wait_until_finished: bool = false) -> void:
 			await audio_player.finished
 	else:
 		push_error("Audio resource not found or invalid: " + sound_name)
+		print("[renderer]: Available resources: ", _resource_registry.keys())
 
 ## Registers a node in the internal registry for command targeting.
 func register_node(node_name: String, node: Node) -> void:
@@ -169,9 +176,12 @@ func execute_sequence(actions: Array) -> void:
 		await execute_action(action)
 
 func _ready() -> void:
-	# 0. Create a 1x1 transparent placeholder to prevent renderer crashes on missing textures
-	var img = Image.create(1, 1, false, Image.FORMAT_RGBA8)
+	# 0. Create a 1x1 magenta placeholder to identify missing textures visually and prevent crashes
+	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	img.fill(Color.MAGENTA)
 	_placeholder_tex = ImageTexture.create_from_image(img)
+
+	register_resource("__placeholder", _placeholder_tex)
 
 	var episode_path = ""
 
@@ -202,8 +212,14 @@ func _ready() -> void:
 			# 4. Auto-exit in headless mode after completion
 			if DisplayServer.get_name() == "headless" or OS.has_feature("movie"):
 				_output_result("success", duration)
+
+				# Attempt to avoid Signal 11 crash during shutdown by clearing scenes manually
+				_clear_registry()
+				background_node.texture = null
+				_resource_registry.clear()
+
 				# Wait a few frames to ensure Movie Maker finishes writing and everything is stable
-				for j in range(5):
+				for j in range(10):
 					await get_tree().process_frame
 				get_tree().quit()
 		else:
@@ -278,6 +294,10 @@ func play_episode(package: Dictionary) -> float:
 
 ## Pre-loads all required textures and audio into the resource registry.
 func _preload_assets(assets: Array) -> void:
+	# Clear previous resources to be safe
+	_resource_registry.clear()
+	register_resource("__placeholder", _placeholder_tex) # Internal ref
+
 	for asset_req in assets:
 		var name = asset_req.get("name", "")
 		var url = asset_req.get("url", "")
@@ -287,14 +307,30 @@ func _preload_assets(assets: Array) -> void:
 
 		# In a real setup, we might download the file from the URL first.
 		# For this local prototype, we map the backend URL to a path relative to the project.
-		var local_path = url.replace("http://localhost:3000/uploads", ProjectSettings.globalize_path("res://") + "../backend/uploads")
+		var global_res_path = ProjectSettings.globalize_path("res://")
+		var local_path = url.replace("http://localhost:3000/uploads", global_res_path + "../backend/uploads")
+
+		# Robustly handle extension differences (AI might return .jpg or .png)
+		if type != "audio":
+			if not FileAccess.file_exists(local_path):
+				var alternative = ""
+				if local_path.ends_with(".png"): alternative = local_path.replace(".png", ".jpg")
+				elif local_path.ends_with(".jpg"): alternative = local_path.replace(".jpg", ".png")
+
+				if alternative != "" and FileAccess.file_exists(alternative):
+					print("[renderer]: Auto-correcting extension for ", name, ": using ", alternative)
+					local_path = alternative
 
 		if type == "audio":
 			var audio = AssetLoader.load_audio(local_path)
 			if audio: register_resource(name, audio)
 		else:
 			var tex = AssetLoader.load_texture(local_path)
-			if tex: register_resource(name, tex)
+			if tex:
+				register_resource(name, tex)
+			else:
+				print("[renderer]: Asset ", name, " failed to load. Using placeholder.")
+				register_resource(name, _placeholder_tex)
 
 func _output_result(status: String, duration: float = 0.0, error_msg: String = "") -> void:
 	var result = {

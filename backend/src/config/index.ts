@@ -15,6 +15,7 @@ export const config = {
     path: process.env.STORAGE_PATH || './uploads',
   },
   ai: {
+    useMockAi: process.env.USE_MOCK_AI === 'true',
     openRouter: {
       apiKey: process.env.OPENROUTER_API_KEY || '',
       baseUrl: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',

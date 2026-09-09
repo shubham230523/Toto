@@ -12,6 +12,10 @@ export class SafetyValidatorService {
    * Audits generated story content for toddler appropriateness and general safety.
    */
   async validateContent(story: CreateStoryDto): Promise<SafetyResult> {
+    if (config.ai.useMockAi) {
+      return { isSafe: true, reason: 'Mock mode enabled' };
+    }
+
     const safetyPrompt = this.buildSafetyPrompt(story);
 
     const maxRetries = 1;

@@ -80,9 +80,21 @@ export class RenderOrchestratorService {
         console.log(`[RenderOrchestrator]: Job ${jobId} process exited with code ${code}`);
 
         try {
-          if (code === 0 && renderResult && renderResult.status === 'success') {
+          // Robust success check: if Godot printed a success RENDER_RESULT,
+          // we treat it as success even if it crashed on exit (common in headless/movie mode).
+          const isSuccess = (code === 0 || code === 3221225477) && renderResult && renderResult.status === 'success';
+
+          if (isSuccess) {
             // 4. Upload the video to object storage
             const localVideoPath = path.join(path.resolve(config.godot.projectPath), `output/${outputVideoName}`);
+
+            // Check if file actually exists
+            try {
+              await fs.access(localVideoPath);
+            } catch (e) {
+               throw new Error(`Rendered video file not found at ${localVideoPath}`);
+            }
+
             const publicUrl = await videoStorageService.uploadVideo(localVideoPath, finalVideoName);
 
             // 5. Update the render job

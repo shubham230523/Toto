@@ -9,6 +9,7 @@ import { storyRepository } from '../repositories/story.repository';
 import { storyboardRepository } from '../repositories/storyboard.repository';
 import { episodeRepository } from '../repositories/episode.repository';
 import { getStoryGenerationPrompt, getStoryboardGenerationPrompt } from '../utils/prompt-templates';
+import { getMockStory, getMockStoryboard } from '../utils/mock-data';
 import { validateGeneratedStory } from '../utils/story-validator';
 import { validateGeneratedStoryboard } from '../utils/storyboard-validator';
 import { CreateStoryDto } from '../models/story.model';
@@ -39,7 +40,14 @@ export class ContentGenerationService {
       console.log(`[ContentGeneration]: Using characters: ${characterNames.join(', ')}`);
 
       const storyPrompt = getStoryGenerationPrompt(learningConcept, characterNames);
-      const storyData = await openRouterService.generateJson<CreateStoryDto>(storyPrompt);
+      let storyData: CreateStoryDto;
+
+      if (config.ai.useMockAi) {
+        console.log(`[ContentGeneration]: Using MOCK AI for story generation.`);
+        storyData = getMockStory(learningConcept);
+      } else {
+        storyData = await openRouterService.generateJson<CreateStoryDto>(storyPrompt);
+      }
       console.log(`[ContentGeneration]: Story AI response received: ${storyData.title}`);
 
       // 3. Story Validation
@@ -63,7 +71,14 @@ export class ContentGenerationService {
 
     // 4. Storyboard Generation
     const storyboardPrompt = getStoryboardGenerationPrompt(story);
-    const storyboardData = await openRouterService.generateJson<Storyboard>(storyboardPrompt);
+    let storyboardData: Storyboard;
+
+    if (config.ai.useMockAi) {
+      console.log(`[ContentGeneration]: Using MOCK AI for storyboard generation.`);
+      storyboardData = getMockStoryboard(story);
+    } else {
+      storyboardData = await openRouterService.generateJson<Storyboard>(storyboardPrompt);
+    }
     console.log(`[ContentGeneration]: Storyboard AI response received.`);
 
     // 5. Storyboard Validation
