@@ -1,0 +1,265 @@
+{
+  "episode": {
+    "id": "464bacb7-1663-4a19-b525-412883661e13",
+    "title": "Mock: Toto finds a colorful flower",
+    "video_url": null,
+    "duration": null,
+    "characters": [],
+    "status": "generating",
+    "created_at": "2026-09-09 12:56:54"
+  },
+  "story": {
+    "id": "9190d943-1814-4d06-b250-265f9679ee9d",
+    "title": "Mock: Toto finds a colorful flower",
+    "learning_concept": "Toto finds a colorful flower",
+    "characters": [
+      "Toto",
+      "Bobo"
+    ],
+    "scenes": [
+      {
+        "description": "Toto is walking in a bright meadow.",
+        "setting": "A sunny meadow with green grass.",
+        "duration": 10
+      },
+      {
+        "description": "Bobo joins Toto and they wave hello.",
+        "setting": "The same sunny meadow.",
+        "duration": 10
+      }
+    ],
+    "estimated_duration": 20,
+    "created_at": "2026-09-09 12:56:54",
+    "dialogue": [
+      {
+        "characterName": "Toto",
+        "text": "Hello Bobo!"
+      },
+      {
+        "characterName": "Bobo",
+        "text": "Hello Toto! Let us learn about things."
+      }
+    ],
+    "learningConcept": "Toto finds a colorful flower",
+    "estimatedDuration": 20
+  },
+  "storyboard": {
+    "id": "a2a1f081-64c7-419c-a8b5-a3bdcf520603",
+    "title": "Mock: Toto finds a colorful flower",
+    "learning_concept": "Toto finds a colorful flower",
+    "scenes": [
+      {
+        "background": "bg_meadow",
+        "duration": 10,
+        "characters": [
+          "Toto"
+        ],
+        "objects": [],
+        "dialogue": [],
+        "actions": [
+          {
+            "type": "SHOW",
+            "target": "Toto",
+            "params": {
+              "x": 400,
+              "y": 800
+            },
+            "startTime": 0,
+            "duration": 1
+          },
+          {
+            "type": "MOVE",
+            "target": "Toto",
+            "params": {
+              "x": 800,
+              "y": 800
+            },
+            "startTime": 1,
+            "duration": 5
+          }
+        ]
+      },
+      {
+        "background": "bg_meadow",
+        "duration": 10,
+        "characters": [
+          "Toto",
+          "Bobo"
+        ],
+        "objects": [],
+        "dialogue": [],
+        "actions": [
+          {
+            "type": "SHOW",
+            "target": "Bobo",
+            "params": {
+              "x": 1200,
+              "y": 800
+            },
+            "startTime": 0,
+            "duration": 1
+          },
+          {
+            "type": "SPEAK",
+            "target": "Toto",
+            "params": {
+              "sound": "audio_toto_hello"
+            },
+            "startTime": 1,
+            "duration": 2
+          },
+          {
+            "type": "SPEAK",
+            "target": "Bobo",
+            "params": {
+              "sound": "audio_bobo_hello"
+            },
+            "startTime": 4,
+            "duration": 2
+          }
+        ]
+      }
+    ],
+    "required_assets": "[{\"name\":\"Toto\",\"type\":\"character\",\"metadata\":{\"species\":\"turtle\"},\"url\":\"http://localhost:3000/uploads/characters/toto_canonical.jpg\"},{\"name\":\"Bobo\",\"type\":\"character\",\"metadata\":{\"species\":\"bear\"},\"url\":\"http://localhost:3000/uploads/characters/bobo_canonical.jpg\"},{\"name\":\"bg_meadow\",\"type\":\"background\",\"metadata\":{\"description\":\"sunny meadow\"},\"url\":\"http://localhost:3000/uploads/backgrounds/bg_bg_meadow.jpg\"},{\"name\":\"audio_toto_hello\",\"type\":\"audio\",\"metadata\":{\"text\":\"Hello Bobo!\"},\"url\":\"http://localhost:3000/uploads/audio/audio_audio_toto_hello.mp3\"},{\"name\":\"audio_bobo_hello\",\"type\":\"audio\",\"metadata\":{\"text\":\"Hello Toto!\"},\"url\":\"http://localhost:3000/uploads/audio/audio_audio_bobo_hello.mp3\"}]",
+    "estimated_duration": 20,
+    "created_at": "2026-09-09 12:56:54",
+    "requiredAssets": [
+      {
+        "name": "Toto",
+        "type": "character",
+        "metadata": {
+          "species": "turtle"
+        },
+        "url": "http://localhost:3000/uploads/characters/toto_canonical.jpg"
+      },
+      {
+        "name": "Bobo",
+        "type": "character",
+        "metadata": {
+          "species": "bear"
+        },
+        "url": "http://localhost:3000/uploads/characters/bobo_canonical.jpg"
+      },
+      {
+        "name": "bg_meadow",
+        "type": "background",
+        "metadata": {
+          "description": "sunny meadow"
+        },
+        "url": "http://localhost:3000/uploads/backgrounds/bg_bg_meadow.jpg"
+      },
+      {
+        "name": "audio_toto_hello",
+        "type": "audio",
+        "metadata": {
+          "text": "Hello Bobo!"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_audio_toto_hello.mp3"
+      },
+      {
+        "name": "audio_bobo_hello",
+        "type": "audio",
+        "metadata": {
+          "text": "Hello Toto!"
+        },
+        "url": "http://localhost:3000/uploads/audio/audio_audio_bobo_hello.mp3"
+      }
+    ],
+    "learningConcept": "Toto finds a colorful flower",
+    "estimatedDuration": 20
+  },
+  "characters": [
+    {
+      "id": null,
+      "name": "Bobo",
+      "species": "Bear",
+      "personality": "Playful, energetic, and a bit clumsy. Loves honey and big bear hugs.",
+      "appearance": "A fluffy brown bear cub with a blue scarf.",
+      "metadata": {
+        "role": "Secondary",
+        "traits": [
+          "energetic",
+          "clumsy",
+          "sweet"
+        ]
+      },
+      "created_at": "2026-09-09 12:49:33",
+      "weight": 30
+    },
+    {
+      "id": null,
+      "name": "Toto",
+      "species": "Turtle",
+      "personality": "Thoughtful, curious, and gentle. Loves exploring at a slow and steady pace. Always notices the tiny details like a unique flower or a shiny pebble.",
+      "appearance": "A small, bright green turtle with a soft-edged, patterned shell in earth tones. Big, friendly brown eyes and a small, warm smile. Moves with cute, slightly clumsy steps.",
+      "metadata": {
+        "role": "Protagonist",
+        "age_group": "Toddler",
+        "primary_color": "Green",
+        "is_canonical": true,
+        "traits": [
+          "slow",
+          "observant",
+          "kind"
+        ]
+      },
+      "created_at": "2026-09-09 12:49:33",
+      "weight": 40
+    }
+  ],
+  "assets": [
+    {
+      "id": "902ed8b7-45c2-47a6-95f2-1d5c35b56f3e",
+      "name": "Toto",
+      "type": "character",
+      "url": "http://localhost:3000/uploads/characters/toto_canonical.jpg",
+      "metadata": {
+        "is_canonical": true,
+        "generated_prompt": "\n      2D vector cartoon, children's book style. Character: Toto.\n      Details: Character Bible: Toto \r\n\r\n 1. Appearance\r\nToto is a small, bright green turtle designed with a toddler-friendly aesthetic. He has a soft-edged, rounded body without sharp corners. His shell is a key feature, appearing sturdy but not heavy, featuring a simplified geometric pattern. His most striking feature is his large, expressive brown eyes that convey a sense of wonder and kindness.\n      Full body, thick clean outlines, white background, toddler-friendly, cute.\n    "
+      },
+      "created_at": "2026-09-09 12:52:41"
+    },
+    {
+      "id": "2b2672af-2757-4325-ab46-b9b7a9187626",
+      "name": "Bobo",
+      "type": "character",
+      "url": "http://localhost:3000/uploads/characters/bobo_canonical.jpg",
+      "metadata": {
+        "is_canonical": true,
+        "generated_prompt": "\n      2D vector cartoon, children's book style. Character: Bobo.\n      Details: Character Bible: Bobo \r\n\r\n Identity\r\n- **Name**: Bobo\r\n- **Species**: Bear Cub\r\n- **Age**: Toddler (equivalent to 3 years old)\r\n- **Role**: Secondary character, Toto's playful friend.\r\n\r\n Personality\r\n- **Energetic & Playful**: Always ready for a game or a chase.\r\n- **Kind-hearted**: Loves sharing and giving big \"bear hugs.\"\r\n- **Clumsy but Cute**: Often trips or bumps into things, but always laughs it off.\r\n- **Curious**: Loves exploring nature, especially looking for snacks like berries or honey.\r\n\r\n Visual Appearance\r\n- **Core Aesthetic**: 2D vector style, clean thick outlines, soft minimalist gradients.\r\n- **Body**: A chubby, fluffy brown bear cub. Soft, rounded shapes for the head and body.\r\n- **Face**: Large, expressive eyes (brown). A small black nose and a warm, friendly smile.\r\n- **Clothing/Accessories**: Wears a simple, bright blue scarf around his neck.\r\n- **Colors**:\r\n  - Primary: Warm Brown\r\n  - Secondary: Tan (muzzle and belly)\r\n  - Accessory: Sky Blue (scarf)\r\n- **Movement**: Bouncy, energetic, slightly wobbly steps.\r\n\r\n Animations\r\n- **Idle**: Gentle swaying, looking around with a smile.\r\n- **Walk**: Heavy but bouncy steps.\r\n- **Happy**: Jumping up and down with paws in the air.\r\n- **Clumsy**: A cute little stumble and quick recovery.\n      Full body, thick clean outlines, white background, toddler-friendly, cute.\n    "
+      },
+      "created_at": "2026-09-09 12:53:24"
+    },
+    {
+      "id": "91e815ff-3ad8-44a8-90ff-1342ef4fb673",
+      "name": "bg_meadow",
+      "type": "background",
+      "url": "http://localhost:3000/uploads/backgrounds/bg_bg_meadow.jpg",
+      "metadata": {
+        "generated_prompt": "\n      Create a high-quality 2D vector-style cartoon background for a children's animation series.\n      Theme: bg_meadow\n      Requirements:\n      - Clean 2D children's cartoon style.\n      - Bright, cheerful colors and soft lighting.\n      - Flat perspective or simple 2.5D, optimized for Godot scene composition.\n      - No characters.\n      - Solid detail on scenery, simplified for animation.\n    ",
+        "style": "2d-cartoon"
+      },
+      "created_at": "2026-09-09 12:54:09"
+    },
+    {
+      "id": "fb9cf1fb-bd6b-4692-aa7e-4b72c1ac482b",
+      "name": "audio_toto_hello",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_audio_toto_hello.mp3",
+      "metadata": {
+        "text": "Hello Bobo!"
+      },
+      "created_at": "2026-09-09 12:54:10"
+    },
+    {
+      "id": "e8146e5a-53ed-4bdd-a794-58cf0616a186",
+      "name": "audio_bobo_hello",
+      "type": "audio",
+      "url": "http://localhost:3000/uploads/audio/audio_audio_bobo_hello.mp3",
+      "metadata": {
+        "text": "Hello Toto!"
+      },
+      "created_at": "2026-09-09 12:54:10"
+    }
+  ]
+}
