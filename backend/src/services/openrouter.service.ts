@@ -25,6 +25,10 @@ export class OpenRouterService {
    * @returns The generated text response.
    */
   async generateText(prompt: string, systemPrompt?: string, timeoutMs: number = 60000): Promise<string> {
+    if (config.ai.useMockAi) {
+      throw new AppError('OpenRouterService called while MOCK_AI is enabled. This is a bug in the generation pipeline.', 500);
+    }
+
     const maxRetries = 2;
     let lastError: any;
 

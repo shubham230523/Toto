@@ -1,6 +1,7 @@
 import { CreateStoryDto } from '../models/story.model';
 import { Storyboard } from '../models/storyboard.model';
 import { AssetType } from '../models/asset.model';
+import { ActionType } from '../models/animation-action.model';
 
 export const getMockStory = (concept: string): CreateStoryDto => ({
   title: `Mock: ${concept}`,
@@ -43,8 +44,8 @@ export const getMockStoryboard = (story: any): Storyboard => ({
       objects: [],
       dialogue: [],
       actions: [
-        { type: 'SHOW', target: 'Toto', params: { x: 400, y: 800 }, startTime: 0, duration: 1 },
-        { type: 'MOVE', target: 'Toto', params: { x: 800, y: 800 }, startTime: 1, duration: 5 }
+        { type: ActionType.SHOW, target: 'Toto', params: { x: 400, y: 800 }, startTime: 0, duration: 1 },
+        { type: ActionType.MOVE, target: 'Toto', params: { x: 800, y: 800 }, startTime: 1, duration: 5 }
       ]
     },
     {
@@ -54,9 +55,9 @@ export const getMockStoryboard = (story: any): Storyboard => ({
       objects: [],
       dialogue: [],
       actions: [
-        { type: 'SHOW', target: 'Bobo', params: { x: 1200, y: 800 }, startTime: 0, duration: 1 },
-        { type: 'SPEAK', target: 'Toto', params: { sound: 'audio_toto_hello' }, startTime: 1, duration: 2 },
-        { type: 'SPEAK', target: 'Bobo', params: { sound: 'audio_bobo_hello' }, startTime: 4, duration: 2 }
+        { type: ActionType.SHOW, target: 'Bobo', params: { x: 1200, y: 800 }, startTime: 0, duration: 1 },
+        { type: ActionType.SPEAK, target: 'Toto', params: { sound: 'audio_toto_hello' }, startTime: 1, duration: 2 },
+        { type: ActionType.SPEAK, target: 'Bobo', params: { sound: 'audio_bobo_hello' }, startTime: 4, duration: 2 }
       ]
     }
   ],

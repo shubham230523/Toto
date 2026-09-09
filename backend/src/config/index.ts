@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 // Load environment variables from .env file
 dotenv.config();
 
+const useMockAi = String(process.env.USE_MOCK_AI).trim().toLowerCase() === 'true';
+console.log(`[Config]: Mock AI Mode is ${useMockAi ? 'ENABLED' : 'DISABLED'} (Raw: "${process.env.USE_MOCK_AI}")`);
+
 export const config = {
   server: {
     port: parseInt(process.env.PORT || '3000', 10),
@@ -15,7 +18,7 @@ export const config = {
     path: process.env.STORAGE_PATH || './uploads',
   },
   ai: {
-    useMockAi: process.env.USE_MOCK_AI === 'true',
+    useMockAi: String(process.env.USE_MOCK_AI).trim().toLowerCase() === 'true',
     openRouter: {
       apiKey: process.env.OPENROUTER_API_KEY || '',
       baseUrl: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',
