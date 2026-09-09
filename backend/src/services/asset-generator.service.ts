@@ -30,7 +30,7 @@ export class AssetGeneratorService {
     `;
 
     const generationResult = await hostedImageService.generateImage(imagePrompt, { width: 1024, height: 1024 });
-    const fileName = `${name.toLowerCase()}_canonical.png`;
+    const fileName = `${name.toLowerCase()}_canonical.jpg`;
     const publicUrl = await localStorageService.uploadImage(generationResult.url, fileName, 'characters');
 
     return assetRepository.create({
@@ -63,7 +63,7 @@ export class AssetGeneratorService {
     `;
 
     const generationResult = await hostedImageService.generateImage(imagePrompt, { width: 1024, height: 1024 });
-    const fileName = `${characterName.toLowerCase()}_expression_${expression.toLowerCase()}.png`;
+    const fileName = `${characterName.toLowerCase()}_expression_${expression.toLowerCase()}.jpg`;
     const publicUrl = await localStorageService.uploadImage(generationResult.url, fileName, 'expressions');
 
     return assetRepository.create({
@@ -90,7 +90,7 @@ export class AssetGeneratorService {
     `;
 
     const generationResult = await hostedImageService.generateImage(imagePrompt, { width: 1024, height: 1024 });
-    const fileName = `bg_${name.toLowerCase()}.png`;
+    const fileName = `bg_${name.toLowerCase()}.jpg`;
     const publicUrl = await localStorageService.uploadImage(generationResult.url, fileName, 'backgrounds');
 
     return assetRepository.create({
@@ -117,7 +117,7 @@ export class AssetGeneratorService {
     `;
 
     const generationResult = await hostedImageService.generateImage(imagePrompt, { width: 1024, height: 1024 });
-    const fileName = `obj_${name.toLowerCase()}.png`;
+    const fileName = `obj_${name.toLowerCase()}.jpg`;
     const publicUrl = await localStorageService.uploadImage(generationResult.url, fileName, 'objects');
 
     return assetRepository.create({

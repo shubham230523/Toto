@@ -3,17 +3,17 @@ extends Node
 ## AssetLoader
 ## Responsible for loading external assets (images, audio) at runtime.
 
-## Loads a PNG image from a file path and returns an ImageTexture.
+## Loads a texture image from a file path and returns an ImageTexture.
 func load_texture(file_path: String) -> ImageTexture:
 	if not FileAccess.file_exists(file_path):
 		push_error("Texture file not found: " + file_path)
 		return null
 
 	var image = Image.load_from_file(file_path)
-	if image:
+	if image and image.get_width() > 0:
 		return ImageTexture.create_from_image(image)
 
-	push_error("Failed to load texture: " + file_path)
+	push_error("Failed to load texture or image is empty: " + file_path)
 	return null
 
 ## Loads an audio file (WAV or OGG) from a file path and returns an AudioStream.

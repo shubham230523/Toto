@@ -58,7 +58,7 @@ Total Duration: ${story.estimatedDuration} seconds
 ### CONSTRAINTS:
 1. **No Code**: Do NOT return any Godot GDScript or programming code.
 2. **Strict Actions**: Use ONLY these action types: SHOW, HIDE, MOVE, ANIMATE, WAIT, SPEAK, PLAY_SOUND, ROTATE, SCALE.
-3. **Asset Manifest**: Identify all unique assets (characters, backgrounds, objects, expressions, audio) required.
+3. **Asset Manifest**: Identify all unique assets (characters, backgrounds, objects, expressions, audio) required. For audio assets (dialogue/narration), name them with the prefix 'audio_' followed by the character name and a short description (e.g., 'audio_toto_hello').
 4. **Target Coordinates**: For MOVE actions, use a 1920x1080 coordinate system.
 5. **JSON Only**: Return ONLY a valid JSON object.
 
@@ -68,25 +68,25 @@ Total Duration: ${story.estimatedDuration} seconds
   "learningConcept": "${story.learningConcept}",
   "requiredAssets": [
     {
-      "name": "asset_name",
-      "type": "character|background|object|expression|audio",
-      "metadata": { "text": "For audio assets, include the full text to be spoken here" }
+      "name": "audio_toto_greeting",
+      "type": "audio",
+      "metadata": { "text": "Hello, I am Toto!", "characterName": "Toto" }
     }
   ],
   "scenes": [
     {
       "background": "background_name",
       "duration": 15,
-      "characters": ["name1", "name2"],
+      "characters": ["Toto"],
       "objects": ["obj1"],
       "dialogue": [
         { "characterName": "Toto", "text": "Hello!" }
       ],
       "actions": [
         {
-          "type": "MOVE",
+          "type": "SPEAK",
           "target": "Toto",
-          "params": { "x": 500, "y": 800 },
+          "params": { "sound": "audio_toto_greeting" },
           "startTime": 0,
           "duration": 2
         }

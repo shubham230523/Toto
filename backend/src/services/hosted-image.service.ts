@@ -56,7 +56,7 @@ export class HostedImageService implements IImageGenerationService {
           });
 
           return {
-            url: `data:image/png;base64,${Buffer.from(response.data).toString('base64')}`,
+            url: `data:image/jpeg;base64,${Buffer.from(response.data).toString('base64')}`,
             revisedPrompt: prompt,
           };
         }
@@ -81,7 +81,7 @@ export class HostedImageService implements IImageGenerationService {
         }
 
         return {
-          url: `data:image/png;base64,${Buffer.from(response.data).toString('base64')}`,
+          url: `data:image/jpeg;base64,${Buffer.from(response.data).toString('base64')}`,
           revisedPrompt: prompt,
         };
       } catch (error: any) {

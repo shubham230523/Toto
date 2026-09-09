@@ -16,6 +16,8 @@ const OBJECT_SCENE = preload("res://scenes/object.tscn")
 var _registry = {}
 ## Map of resource names to their loaded objects (AudioStream, Texture2D).
 var _resource_registry = {}
+## Placeholder texture for missing assets
+var _placeholder_tex: Texture2D
 
 signal episode_finished
 
@@ -57,7 +59,8 @@ func animate_target(target_name: String, animation_name: String) -> void:
 		if node.has_method("play_animation"):
 			node.play_animation(animation_name)
 		else:
-			push_error("Target does not support animations: " + target_name)
+			# Silently ignore for objects that don't support it to avoid breaking the render
+			print("[renderer]: Skip animation '", animation_name, "' for non-animated target: ", target_name)
 	else:
 		push_error("Target not found for ANIMATE: " + target_name)
 
@@ -82,6 +85,15 @@ func rotate_target(target_name: String, target_degrees: float, duration: float) 
 ## PLAY_SOUND command: Plays an audio asset.
 func play_sound(sound_name: String, wait_until_finished: bool = false) -> void:
 	var stream = _resource_registry.get(sound_name)
+
+	# If exact name not found or is a texture, try to find an audio asset that contains the name
+	if not stream or not stream is AudioStream:
+		for key in _resource_registry:
+			var res = _resource_registry[key]
+			if res is AudioStream and (key.contains(sound_name) or sound_name.contains(key)):
+				stream = res
+				break
+
 	if stream and stream is AudioStream:
 		audio_player.stream = stream
 		audio_player.play()
@@ -138,12 +150,14 @@ func execute_action(action: Dictionary) -> void:
 			rotate_target(target, degrees, duration)
 		"PLAY_SOUND":
 			var params = action.get("params", {})
-			var sound_name = params.get("sound", target)
+			var sound_name = params.get("sound", "")
+			if sound_name == "": sound_name = target
 			var wait = params.get("wait", false)
 			await play_sound(sound_name, wait)
 		"SPEAK":
 			var params = action.get("params", {})
-			var sound_name = params.get("sound", target)
+			var sound_name = params.get("sound", "")
+			if sound_name == "": sound_name = target
 			# SPEAK usually implies waiting for the character to finish talking
 			await play_sound(sound_name, true)
 		_:
@@ -155,6 +169,10 @@ func execute_sequence(actions: Array) -> void:
 		await execute_action(action)
 
 func _ready() -> void:
+	# 0. Create a 1x1 transparent placeholder to prevent renderer crashes on missing textures
+	var img = Image.create(1, 1, false, Image.FORMAT_RGBA8)
+	_placeholder_tex = ImageTexture.create_from_image(img)
+
 	var episode_path = ""
 
 	# 1. Check for command-line arguments (Headless support)
@@ -184,8 +202,12 @@ func _ready() -> void:
 			# 4. Auto-exit in headless mode after completion
 			if DisplayServer.get_name() == "headless" or OS.has_feature("movie"):
 				_output_result("success", duration)
+				# Wait a few frames to ensure Movie Maker finishes writing and everything is stable
+				for j in range(5):
+					await get_tree().process_frame
 				get_tree().quit()
 		else:
+			push_error("Failed to load episode: " + episode_path)
 			if DisplayServer.get_name() == "headless" or OS.has_feature("movie"):
 				_output_result("error", 0.0, "Failed to load episode definition")
 				get_tree().quit(1)
@@ -204,9 +226,8 @@ func setup_scene(scene_data: Dictionary) -> void:
 
 	# 2. Set Background
 	var bg_name = scene_data.get("background", "")
-	var bg_texture = _resource_registry.get(bg_name)
-	if bg_texture:
-		background_node.texture = bg_texture
+	var bg_texture = _resource_registry.get(bg_name, _placeholder_tex)
+	background_node.texture = bg_texture
 
 	# 3. Spawn Characters
 	for char_name in scene_data.get("characters", []):
@@ -214,10 +235,9 @@ func setup_scene(scene_data: Dictionary) -> void:
 		characters_container.add_child(char_instance)
 		register_node(char_name, char_instance)
 
-		# Set default texture if available
-		var texture = _resource_registry.get(char_name)
-		if texture:
-			char_instance.set_texture(texture)
+		# Set texture or placeholder
+		var texture = _resource_registry.get(char_name, _placeholder_tex)
+		char_instance.set_texture(texture)
 
 	# 4. Spawn Objects
 	for obj_name in scene_data.get("objects", []):
@@ -225,9 +245,8 @@ func setup_scene(scene_data: Dictionary) -> void:
 		objects_container.add_child(obj_instance)
 		register_node(obj_name, obj_instance)
 
-		var texture = _resource_registry.get(obj_name)
-		if texture:
-			obj_instance.set_texture(texture)
+		var texture = _resource_registry.get(obj_name, _placeholder_tex)
+		obj_instance.set_texture(texture)
 
 ## Resets the registry and clears instantiated actors.
 func _clear_registry() -> void:

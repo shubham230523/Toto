@@ -24,51 +24,69 @@ export class OpenRouterService {
    * @param timeoutMs Maximum time to wait for a response.
    * @returns The generated text response.
    */
-  async generateText(prompt: string, systemPrompt?: string, timeoutMs: number = 45000): Promise<string> {
-    try {
-      const messages: any[] = [];
-      if (systemPrompt) {
-        messages.push({ role: 'system', content: systemPrompt });
-      }
-      messages.push({ role: 'user', content: prompt });
+  async generateText(prompt: string, systemPrompt?: string, timeoutMs: number = 60000): Promise<string> {
+    const maxRetries = 2;
+    let lastError: any;
 
-      const response = await axios.post(
-        `${this.baseUrl}/chat/completions`,
-        {
-          model: this.model,
-          messages,
-          headers: {
-            'HTTP-Referer': 'https://toto.example.com',
-            'X-Title': 'Toto AI Assistant',
-          }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: timeoutMs,
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const messages: any[] = [];
+        if (systemPrompt) {
+          messages.push({ role: 'system', content: systemPrompt });
         }
-      );
+        messages.push({ role: 'user', content: prompt });
 
-      const text = response.data.choices[0]?.message?.content;
+        const response = await axios.post(
+          `${this.baseUrl}/chat/completions`,
+          {
+            model: this.model,
+            messages,
+            headers: {
+              'HTTP-Referer': 'https://toto.example.com',
+              'X-Title': 'Toto AI Assistant',
+            }
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${this.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            timeout: timeoutMs,
+          }
+        );
 
-      if (!text) {
-        throw new AppError('OpenRouter returned an empty response', 502);
+        const text = response.data.choices[0]?.message?.content;
+
+        if (!text || text.trim().length === 0) {
+          throw new AppError('OpenRouter returned an empty response', 502);
+        }
+
+        return text;
+      } catch (error: any) {
+        lastError = error;
+        const statusCode = error.response?.status;
+
+        // Don't retry on 4xx errors except 408 (timeout) and 429 (rate limit)
+        if (statusCode && statusCode >= 400 && statusCode < 500 && statusCode !== 408 && statusCode !== 429) {
+          break;
+        }
+
+        console.warn(`[OpenRouterService]: Attempt ${attempt + 1} failed: ${error.message}. Retrying...`);
+
+        if (attempt < maxRetries) {
+          // Wait with exponential backoff
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        }
       }
-
-      return text;
-    } catch (error: any) {
-      console.error('[OpenRouterService]: Generation error', error.response?.data || error.message);
-
-      const statusCode = error.response?.status || 502;
-      const errorMessage = error.response?.data?.error?.message || error.message || 'Unknown error';
-
-      throw new AppError(
-        `Failed to generate content via OpenRouter: ${errorMessage}`,
-        statusCode
-      );
     }
+
+    const statusCode = lastError.response?.status || 502;
+    const errorMessage = lastError.response?.data?.error?.message || lastError.message || 'Unknown error';
+
+    throw new AppError(
+      `Failed to generate content via OpenRouter after ${maxRetries + 1} attempts: ${errorMessage}`,
+      statusCode
+    );
   }
 
   /**
