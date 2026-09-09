@@ -305,10 +305,14 @@ func _preload_assets(assets: Array) -> void:
 
 		if url == "" or name == "": continue
 
-		# In a real setup, we might download the file from the URL first.
 		# For this local prototype, we map the backend URL to a path relative to the project.
-		var global_res_path = ProjectSettings.globalize_path("res://")
-		var local_path = url.replace("http://localhost:3000/uploads", global_res_path + "../backend/uploads")
+		# Use simplified absolute paths to avoid issues with Godot's file_exists and '..'
+		var base_uploads_path = ProjectSettings.globalize_path("res://").trim_suffix("/").trim_suffix("\\")
+		base_uploads_path = base_uploads_path.get_base_dir() + "/backend/uploads"
+
+		var relative_url_path = url.replace("http://localhost:3000/uploads", "")
+		var local_path = base_uploads_path + relative_url_path
+		local_path = local_path.replace("\\", "/") # Normalize to forward slashes
 
 		# Robustly handle extension differences (AI might return .jpg or .png)
 		if type != "audio":

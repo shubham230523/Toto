@@ -61,13 +61,17 @@ export class RenderOrchestratorService {
 
       godotProcess.stdout.on('data', (data) => {
         const output = data.toString();
-        process.stdout.write(`[Godot STDOUT]: ${output}`); // Log Godot output for debugging
+        process.stdout.write(`[Godot STDOUT]: ${output}`);
+
+        // Find RENDER_RESULT in the output buffer, potentially spanning multiple chunks
         if (output.includes('RENDER_RESULT:')) {
             try {
-              const resultStr = output.split('RENDER_RESULT:')[1].trim();
-              renderResult = JSON.parse(resultStr);
+              const parts = output.split('RENDER_RESULT:');
+              const jsonStr = parts[1].split('\n')[0].trim();
+              renderResult = JSON.parse(jsonStr);
+              console.log(`[RenderOrchestrator]: Successfully captured render result for job ${jobId}`);
             } catch (e) {
-              console.error(`[RenderOrchestrator]: Failed to parse render result for job ${jobId}`, e);
+              console.error(`[RenderOrchestrator]: Failed to parse render result for job ${jobId}. JSON snippet: ${output.split('RENDER_RESULT:')[1]}`, e);
             }
         }
       });
