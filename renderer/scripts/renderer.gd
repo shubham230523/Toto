@@ -176,12 +176,14 @@ func execute_sequence(actions: Array) -> void:
 		await execute_action(action)
 
 func _ready() -> void:
-	# 0. Create a 1x1 magenta placeholder to identify missing textures visually and prevent crashes
-	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	# 0. Create a 1x1 magenta placeholder ImageTexture.
+	var img = Image.create(16, 16, false, Image.FORMAT_RGBA8)
 	img.fill(Color.MAGENTA)
 	_placeholder_tex = ImageTexture.create_from_image(img)
 
 	register_resource("__placeholder", _placeholder_tex)
+	if background_node:
+		background_node.texture = _placeholder_tex
 
 	var episode_path = ""
 
@@ -242,27 +244,39 @@ func setup_scene(scene_data: Dictionary) -> void:
 
 	# 2. Set Background
 	var bg_name = scene_data.get("background", "")
-	var bg_texture = _resource_registry.get(bg_name, _placeholder_tex)
+	var bg_texture = _resource_registry.get(bg_name)
+	if not bg_texture or not bg_texture is Texture2D:
+		bg_texture = _placeholder_tex
+
 	background_node.texture = bg_texture
 
 	# 3. Spawn Characters
 	for char_name in scene_data.get("characters", []):
 		var char_instance = CHARACTER_SCENE.instantiate()
+
+		# Set texture or placeholder BEFORE adding to tree
+		var texture = _resource_registry.get(char_name)
+		if not texture or not texture is Texture2D:
+			texture = _placeholder_tex
+
+		char_instance.set_texture(texture)
+
 		characters_container.add_child(char_instance)
 		register_node(char_name, char_instance)
-
-		# Set texture or placeholder
-		var texture = _resource_registry.get(char_name, _placeholder_tex)
-		char_instance.set_texture(texture)
 
 	# 4. Spawn Objects
 	for obj_name in scene_data.get("objects", []):
 		var obj_instance = OBJECT_SCENE.instantiate()
+
+		# Set texture BEFORE adding to tree
+		var texture = _resource_registry.get(obj_name)
+		if not texture or not texture is Texture2D:
+			texture = _placeholder_tex
+
+		obj_instance.set_texture(texture)
+
 		objects_container.add_child(obj_instance)
 		register_node(obj_name, obj_instance)
-
-		var texture = _resource_registry.get(obj_name, _placeholder_tex)
-		obj_instance.set_texture(texture)
 
 ## Resets the registry and clears instantiated actors.
 func _clear_registry() -> void:
@@ -279,6 +293,8 @@ func play_episode(package: Dictionary) -> float:
 
 	# 1. Pre-load Assets from manifest
 	await _preload_assets(storyboard.get("requiredAssets", []))
+
+	print("[renderer]: Assets loaded. Registry keys: ", _resource_registry.keys())
 
 	var total_duration = 0.0
 
@@ -313,6 +329,8 @@ func _preload_assets(assets: Array) -> void:
 		var relative_url_path = url.replace("http://localhost:3000/uploads", "")
 		var local_path = base_uploads_path + relative_url_path
 		local_path = local_path.replace("\\", "/") # Normalize to forward slashes
+
+		print("[renderer]: Loading ", type, " asset '", name, "' from ", local_path)
 
 		# Robustly handle extension differences (AI might return .jpg or .png)
 		if type != "audio":

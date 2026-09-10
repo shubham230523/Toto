@@ -43,7 +43,6 @@ export class RenderOrchestratorService {
       const finalVideoName = `${jobId}.avi`;  // Keep as AVI for now since we don't have FFmpeg
 
       const godotArgs = [
-        '--headless',
         '--rendering-driver', 'opengl3',
         '--path', path.resolve(config.godot.projectPath),
         '--write-movie', path.join(path.resolve(config.godot.projectPath), `output/${outputVideoName}`),
@@ -51,10 +50,11 @@ export class RenderOrchestratorService {
         '--episode', tempFilePath
       ];
 
+      const binaryPath = config.godot.binaryPath.replace(/^["'](.+)["']$/, '$1');
       console.log(`[RenderOrchestrator]: Spawning Godot for job ${jobId}`);
+      console.log(`[RenderOrchestrator]: Command: ${binaryPath} ${godotArgs.join(' ')}`);
       jobRepository.update(jobId, { status: JobStatus.RENDERING });
 
-      const binaryPath = config.godot.binaryPath.replace(/^["'](.+)["']$/, '$1');
       const godotProcess = spawn(binaryPath, godotArgs);
 
       let renderResult: any = null;
@@ -86,6 +86,7 @@ export class RenderOrchestratorService {
         try {
           // Robust success check: if Godot printed a success RENDER_RESULT,
           // we treat it as success even if it crashed on exit (common in headless/movie mode).
+          // 3221225477 is a common exit code for access violation / crash during shutdown.
           const isSuccess = (code === 0 || code === 3221225477) && renderResult && renderResult.status === 'success';
 
           if (isSuccess) {

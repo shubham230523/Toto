@@ -6,8 +6,14 @@ extends Node2D
 @onready var sprite = $Sprite
 
 ## Sets the object's visual texture.
-func set_texture(texture: Texture2D) -> void:
-	sprite.texture = texture
+func set_texture(tex: Texture2D) -> void:
+	if sprite:
+		sprite.texture = tex
+	else:
+		# Fallback if called before @onready
+		var s = get_node_or_null("Sprite")
+		if s:
+			s.texture = tex
 
 ## Convenience method to flip the object horizontally.
 func set_facing_left(is_left: bool) -> void:
