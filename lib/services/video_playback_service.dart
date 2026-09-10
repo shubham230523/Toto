@@ -24,8 +24,17 @@ class VideoPlaybackService {
   /// Initializes playback from a local file.
   Future<void> initializeFile(File file) async {
     await _disposeController();
+    if (!await file.exists()) {
+      throw Exception('Video file does not exist: ${file.path}');
+    }
+    final size = await file.length();
+    if (size == 0) {
+      throw Exception('Video file is empty: ${file.path}');
+    }
+    debugPrint('Initializing video from file: ${file.path} (Size: $size bytes)');
     _controller = VideoPlayerController.file(file);
     await _controller!.initialize();
+    debugPrint('Video initialized successfully.');
   }
 
   /// Starts or resumes playback.

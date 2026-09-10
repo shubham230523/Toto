@@ -23,12 +23,13 @@ class ApiService {
         if (body['status'] == 'success' && body['data'] != null) {
           return Episode.fromJson(body['data']['episode']);
         }
+      } else {
+        debugPrint('getRandomEpisode failed: ${response.statusCode} ${response.body}');
       }
       
-      // Log error or handle non-200 status codes appropriately
       return null;
     } catch (e) {
-      // Handle network errors
+      debugPrint('Error in getRandomEpisode: $e');
       return null;
     }
   }

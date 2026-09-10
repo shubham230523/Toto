@@ -20,6 +20,17 @@ connectDB();
 app.use(morgan('dev'));
 app.use(express.json());
 
+// Basic CORS middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Serve static files (uploads)
 app.use('/uploads', express.static(path.resolve(config.storage.path)));
 

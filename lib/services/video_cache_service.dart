@@ -21,11 +21,13 @@ class VideoCacheService {
       final file = File(filePath);
 
       if (await file.exists()) {
+        debugPrint('Cache hit: $url -> $fileName');
         // Update access time for LRU cleanup (simulated by updating modification time)
         await file.setLastModified(DateTime.now());
         return file;
       }
 
+      debugPrint('Cache miss: Downloading $url...');
       // Download to a temporary file first to avoid corrupted cache on interruption
       final tempFile = File(p.join(directory.path, '$fileName.tmp'));
       final response = await _client.get(Uri.parse(url)).timeout(const Duration(minutes: 5));
@@ -34,22 +36,36 @@ class VideoCacheService {
         await tempFile.writeAsBytes(response.bodyBytes);
         await tempFile.rename(filePath);
         
+        debugPrint('Cache saved: $fileName');
         // After saving, check and clean up cache if needed
         _cleanupCache(directory);
         
         return File(filePath);
+      } else {
+        debugPrint('Download failed with status: ${response.statusCode}');
       }
       return null;
     } catch (e) {
+      debugPrint('Error in getCachedVideo: $e');
       return null;
     }
   }
 
-  /// Generates a unique filename based on the URL hash.
+  /// Generates a unique filename based on the URL hash, preserving the extension.
   String _generateFileName(String url) {
     final bytes = utf8.encode(url);
     final digest = sha256.convert(bytes);
-    return '${digest.toString()}.mp4';
+    
+    String extension = '.mp4'; // Default
+    try {
+      final uri = Uri.parse(url);
+      final pathExtension = p.extension(uri.path);
+      if (pathExtension.isNotEmpty) {
+        extension = pathExtension;
+      }
+    } catch (_) {}
+    
+    return '${digest.toString()}$extension';
   }
 
   /// Returns the local directory used for video caching.
@@ -67,7 +83,9 @@ class VideoCacheService {
     try {
       final directory = await _getCacheDirectory();
       final entities = await directory.list().toList();
-      final files = entities.whereType<File>().where((f) => f.path.endsWith('.mp4')).toList();
+      final files = entities.whereType<File>()
+          .where((f) => f.path.endsWith('.mp4') || f.path.endsWith('.avi'))
+          .toList();
       
       if (files.isEmpty) return null;
       
