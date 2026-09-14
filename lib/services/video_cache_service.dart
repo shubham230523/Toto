@@ -22,13 +22,13 @@ class VideoCacheService {
       final file = File(filePath);
 
       if (await file.exists()) {
-        debugPrint('Cache hit: $url -> $fileName');
+        debugPrint('[VideoCacheService] 📦 Cache HIT: Local match found -> $fileName');
         // Update access time for LRU cleanup (simulated by updating modification time)
         await file.setLastModified(DateTime.now());
         return file;
       }
 
-      debugPrint('Cache miss: Downloading $url...');
+      debugPrint('[VideoCacheService] 🔍 Cache MISS: Resource not stored locally. Initiating download for URL: $url');
       // Download to a temporary file first to avoid corrupted cache on interruption
       final tempFile = File(p.join(directory.path, '$fileName.tmp'));
       final response = await _client.get(Uri.parse(url)).timeout(const Duration(minutes: 5));
@@ -37,17 +37,17 @@ class VideoCacheService {
         await tempFile.writeAsBytes(response.bodyBytes);
         await tempFile.rename(filePath);
         
-        debugPrint('Cache saved: $fileName');
+        debugPrint('[VideoCacheService] ✅ File successfully downloaded and saved to cache layer: $fileName');
         // After saving, check and clean up cache if needed
         _cleanupCache(directory);
         
         return File(filePath);
       } else {
-        debugPrint('Download failed with status: ${response.statusCode}');
+        debugPrint('[VideoCacheService] ❌ Failed to download asset target with status code: ${response.statusCode}');
       }
       return null;
     } catch (e) {
-      debugPrint('Error in getCachedVideo: $e');
+      debugPrint('[VideoCacheService] 🚨 Exception caught in getCachedVideo flow: $e');
       return null;
     }
   }
@@ -88,11 +88,17 @@ class VideoCacheService {
           .where((f) => f.path.endsWith('.mp4') || f.path.endsWith('.avi'))
           .toList();
       
-      if (files.isEmpty) return null;
+      if (files.isEmpty) {
+        debugPrint('[VideoCacheService] ⚠️ Random query requested but local cache is completely empty.');
+        return null;
+      }
       
       files.shuffle();
-      return files.first;
+      final target = files.first;
+      debugPrint('[VideoCacheService] 🎯 Offline Fallback target chosen from cache pool: "${p.basename(target.path)}"');
+      return target;
     } catch (e) {
+      debugPrint('[VideoCacheService] 🚨 Failed to resolve random cache entity: $e');
       return null;
     }
   }
@@ -115,8 +121,11 @@ class VideoCacheService {
       int totalSize = fileStats.fold(0, (sum, item) => sum + (item['size'] as int));
       final limitBytes = AppConstants.maxVideoCacheSizeMB * 1024 * 1024;
       
+      debugPrint('[VideoCacheService] 📊 Current Cache Pool Size: ${(totalSize / (1024 * 1024)).toStringAsFixed(2)} MB / Max Allowed: ${AppConstants.maxVideoCacheSizeMB} MB');
+
       if (totalSize > limitBytes) {
         int bytesToRemove = totalSize - limitBytes;
+        debugPrint('[VideoCacheService] 🧹 Cache limit exceeded. Evicting old files to free up: ${(bytesToRemove / (1024 * 1024)).toStringAsFixed(2)} MB');
         for (final item in fileStats) {
           if (bytesToRemove <= 0) break;
           
@@ -124,10 +133,11 @@ class VideoCacheService {
           final fileSize = item['size'] as int;
           await file.delete();
           bytesToRemove -= fileSize;
+          debugPrint('[VideoCacheService] 🗑️ Evicted: ${p.basename(file.path)} (${(fileSize / 1024).toStringAsFixed(1)} KB)');
         }
       }
     } catch (e) {
-      // Cleanup is secondary, don't fail the main process
+      debugPrint('[VideoCacheService] 🧹 Cache eviction pass bypassed silently: $e');
     }
   }
 }

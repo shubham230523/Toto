@@ -71,24 +71,27 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> with WidgetsBinding
         // Clear prefetch buffers
         _prefetchedEpisode = null;
         _prefetchedVideoFile = null;
-        debugPrint('Using prefetched episode: ${episode?.title}');
+        debugPrint('[PlayerScreen] ⚡ [Optimization] Hit prefetch queue! Using pre-cached episode asset directly: "${episode?.title}"');
       } else {
         // 2. Try to fetch fresh metadata from API
         try {
+          debugPrint('[PlayerScreen] 🌐 Fetching live metadata from network api...');
           episode = await _apiService.getRandomEpisode(excludeIds: _recentlyPlayed).timeout(const Duration(seconds: 10));
           if (episode != null) {
+            debugPrint('[PlayerScreen] ⏬ Initiating media file lookup for video: ${episode.videoUrl}');
             videoFile = await videoCacheService.getCachedVideo(episode.videoUrl)
                 .timeout(const Duration(minutes: 2));
           }
         } catch (e) {
-          debugPrint('Network request failed or timed out: $e');
+          debugPrint('[PlayerScreen] ⚠️ Local network handshake interrupted or timed out: $e');
         }
 
         // 3. Offline Fallback: If network failed or returned nothing, pick a random cached video
         if (videoFile == null) {
+          debugPrint('[PlayerScreen] 🔌 App appears offline or network error occurred. Engaging local repository safe fallback...');
           videoFile = await videoCacheService.getRandomCachedVideo();
           if (videoFile != null) {
-            debugPrint('Offline mode: Playing random video from local cache.');
+            debugPrint('[PlayerScreen] 💾 Safely resolved fallback media from cache hierarchy.');
           }
         }
       }
@@ -142,11 +145,12 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> with WidgetsBinding
     if (_isPrefetching || _prefetchedEpisode != null) return;
 
     _isPrefetching = true;
-    debugPrint('Started prefetching next episode...');
+    debugPrint('[PlayerScreen] 🛠️ [Background Prefetch] Spawning worker thread to load next story proactively...');
 
     try {
       final nextEpisode = await _apiService.getRandomEpisode(excludeIds: _recentlyPlayed);
       if (nextEpisode != null) {
+        debugPrint('[PlayerScreen] 🛠️ [Background Prefetch] Got metadata for next sequence: "${nextEpisode.title}". Pre-downloading video stream...');
         final nextFile = await videoCacheService.getCachedVideo(nextEpisode.videoUrl)
             .timeout(const Duration(minutes: 3));
         
@@ -155,11 +159,11 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> with WidgetsBinding
             _prefetchedEpisode = nextEpisode;
             _prefetchedVideoFile = nextFile;
           });
-          debugPrint('Prefetch complete: ${nextEpisode.title}');
+          debugPrint('[PlayerScreen] 🎉 [Background Prefetch] Optimization complete! Next story is now locked in memory and ready for zero-latency toggle.');
         }
       }
     } catch (e) {
-      debugPrint('Prefetch failed: $e');
+      debugPrint('[PlayerScreen] ❌ [Background Prefetch] Background thread paused silently: $e');
       // Prefetch failure is silent; we'll just fetch normally when the current one ends.
     } finally {
       _isPrefetching = false;
@@ -171,7 +175,7 @@ class _TotoPlayerScreenState extends State<TotoPlayerScreen> with WidgetsBinding
       setState(() {
         _isFinished = true;
       });
-      debugPrint('Episode completed. Loading next story...');
+      debugPrint('[PlayerScreen] 🏁 Current story sequence finished playing. Triggering next episode selection loop...');
       _loadAndPlayRandomEpisode();
     }
   }

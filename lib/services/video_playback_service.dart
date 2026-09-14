@@ -32,34 +32,39 @@ class VideoPlaybackService {
     if (size == 0) {
       throw Exception('Video file is empty: ${file.path}');
     }
-    debugPrint('Initializing video from file: ${file.path} (Size: $size bytes)');
+    debugPrint('[VideoPlaybackService] 🎞️ Allocating native VideoPlayerController mapping for: ${file.path} (Size: $size bytes)');
     _controller = VideoPlayerController.file(file);
     await _controller!.initialize();
-    debugPrint('Video initialized successfully.');
+    debugPrint('[VideoPlaybackService] ✨ Native player pipeline initialized successfully for target layout frame.');
   }
 
   /// Starts or resumes playback.
   Future<void> play() async {
+    debugPrint('[VideoPlaybackService] ▶️ Play command sent to video layer.');
     await _controller?.play();
   }
 
   /// Pauses playback.
   Future<void> pause() async {
+    debugPrint('[VideoPlaybackService] ⏸️ Pause command sent to video layer.');
     await _controller?.pause();
   }
 
   /// Seeks to a specific position.
   Future<void> seekTo(Duration position) async {
+    debugPrint('[VideoPlaybackService] ⏩ Seeking stream position to: $position');
     await _controller?.seekTo(position);
   }
 
   /// Adds a listener to detect when playback completes.
   void addCompletionListener(void Function() onComplete) {
+    debugPrint('[VideoPlaybackService] 🔗 Registering episode completion stream observer.');
     _controller?.addListener(() {
       if (_controller != null &&
           _controller!.value.isInitialized &&
           _controller!.value.position >= _controller!.value.duration &&
           !_controller!.value.isPlaying) {
+        debugPrint('[VideoPlaybackService] 🏁 Playback stream finished boundary reached.');
         onComplete();
       }
     });
@@ -71,7 +76,10 @@ class VideoPlaybackService {
   }
 
   Future<void> _disposeController() async {
-    await _controller?.dispose();
-    _controller = null;
+    if (_controller != null) {
+      debugPrint('[VideoPlaybackService] ♻️ Unbinding and destroying active VideoPlayerController memory footprint.');
+      await _controller?.dispose();
+      _controller = null;
+    }
   }
 }

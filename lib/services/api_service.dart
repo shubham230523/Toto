@@ -15,22 +15,31 @@ class ApiService {
   Future<Episode?> getRandomEpisode({List<String> excludeIds = const []}) async {
     try {
       final queryParams = excludeIds.isNotEmpty ? '?exclude=${excludeIds.join(',')}' : '';
+      final targetUrl = '$_baseUrl/episodes/random$queryParams';
+      
+      debugPrint('[ApiService] 🛫 Requesting random episode from: $targetUrl');
+      if (excludeIds.isNotEmpty) {
+        debugPrint('[ApiService] 🚫 Excluding recently viewed IDs: ${excludeIds.join(', ')}');
+      }
+
       final response = await _client.get(
-        Uri.parse('$_baseUrl/episodes/random$queryParams'),
+        Uri.parse(targetUrl),
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> body = jsonDecode(response.body);
         if (body['status'] == 'success' && body['data'] != null) {
-          return Episode.fromJson(body['data']['episode']);
+          final episode = Episode.fromJson(body['data']['episode']);
+          debugPrint('[ApiService] 🛬 Successfully fetched episode metadata: "${episode.title}" (ID: ${episode.id})');
+          return episode;
         }
       } else {
-        debugPrint('getRandomEpisode failed: ${response.statusCode} ${response.body}');
+        debugPrint('[ApiService] ❌ Server returned error response status: ${response.statusCode} - Body: ${response.body}');
       }
       
       return null;
     } catch (e) {
-      debugPrint('Error in getRandomEpisode: $e');
+      debugPrint('[ApiService] 🚨 Critical error in getRandomEpisode connection flow: $e');
       return null;
     }
   }
