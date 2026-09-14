@@ -56,3 +56,14 @@ render-service/.env
 
 # Widget Preview related
 .widget_preview/
+
+# Local cache and build files
+.gradle_home/
+.artifacts/
+backend/uploads/
+backend/*.txt
+render-service/*.txt
+renderer/godot_*.txt
+accept.bat
+yes.txt
+

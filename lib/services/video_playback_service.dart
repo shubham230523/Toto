@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
 
 /// A service to handle video playback logic using the video_player package.
