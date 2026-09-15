@@ -52,9 +52,10 @@ $prompt
 
 CRITICAL INSTRUCTIONS:
 1. Return ONLY valid JSON matching this schema: ${json.encode(jsonSchema)}. No markdown.
-2. Each "visualPrompt" MUST be a detailed description of a single illustration that includes both the background and the characters (e.g., "Toto the turtle and Mimi the rabbit sitting on a log in a sunny forest, vibrant 2D cartoon style").
-3. Ensure the art style description is consistent across all scenes.
-4. Characters MUST be interacting with the environment to look merged.
+2. Each "visualPrompt" MUST be a detailed description of a single illustration that includes both the background and the characters.
+3. ART STYLE RULE: Use "Vibrant 2D vector cartoon, children's storybook style, thick clean outlines, bright cheerful colors, soft lighting, toddler-friendly, cute and adorable characters, no realistic features, no scary elements, high resolution".
+4. Ensure characters like "Toto the Turtle" look friendly and identifiable in every scene.
+5. Characters MUST be interacting with the environment to look merged.
 ''';
 
     try {

@@ -194,15 +194,41 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
                   const Spacer(),
 
-                  // Progress Bar & Play/Pause at the bottom
+                  // Progress Bar & Timer & Play/Pause at the bottom
                   Column(
                     children: [
-                      LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: Colors.white24,
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
-                        minHeight: 4,
-                        borderRadius: BorderRadius.circular(2),
+                      // Timer Display
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _formatDuration(_position),
+                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                          ),
+                          Text(
+                            _formatDuration(_duration),
+                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      // Interactive Slider
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 4,
+                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                          activeTrackColor: Colors.orange,
+                          inactiveTrackColor: Colors.white24,
+                          thumbColor: Colors.orange,
+                        ),
+                        child: Slider(
+                          value: progress.clamp(0.0, 1.0),
+                          onChanged: (val) {
+                            final newPos = Duration(milliseconds: (_duration.inMilliseconds * val).toInt());
+                            _audioPlayer.seek(newPos);
+                          },
+                        ),
                       ),
                       const SizedBox(height: 8),
                       IconButton(
@@ -222,5 +248,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ],
       ),
     );
+  }
+
+  String _formatDuration(Duration d) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(d.inMinutes.remainder(60));
+    final seconds = twoDigits(d.inSeconds.remainder(60));
+    return '$minutes:$seconds';
   }
 }
