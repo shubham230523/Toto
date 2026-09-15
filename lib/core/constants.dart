@@ -1,33 +1,30 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
-
 class AppConstants {
   static const String appName = 'Toto';
-  
-  // API Configuration
-  static String get apiBaseUrl {
-    if (kReleaseMode) {
-      return 'https://api.yourproductiondomain.com'; // Change this for production
-    }
 
-    // Dynamic discovery for local development
-    if (kIsWeb) {
-      return 'http://localhost:3000';
-    } else if (Platform.isAndroid) {
-      // NOTE: 10.0.2.2 is ONLY for Android Emulators. 
-      // For real physical Android devices (like your SM E236B), it MUST use your computer's actual Wi-Fi IP address:
-      return 'http://192.168.1.3:3000';
-    } else if (Platform.isIOS || Platform.isMacOS) {
-      return 'http://localhost:3000';
-    }
+  // AI Configuration
+  // TODO: Replace with your actual Gemini API Key from Google AI Studio
+  static const String geminiApiKey = 'YOUR_GEMINI_API_KEY_HERE';
+  static const String geminiModel = 'gemini-1.5-flash';
 
-    // Fallback
-    return 'http://192.168.1.3:3000'; 
-  }
-  
-  static const int apiTimeoutSeconds = 30;
+  // Story Configuration Presets
+  static const List<String> storyTypes = [
+    'Child Story',
+    'Sci-Fi Adventure',
+    'Mystery Tale',
+    'Nature Discovery',
+  ];
 
-  // Video Configuration (Placeholders)
-  static const int maxVideoCacheSizeMB = 500;
-  static const int maxVideoCacheAgeDays = 7;
+  static const List<String> availableCharacters = [
+    'Toto the Turtle',
+    'Mimi the Rabbit',
+    'Bobo the Bear',
+    'Zuzu the Zebra',
+  ];
+
+  // Pollinations AI Configuration
+  static const String pollinationsBaseUrl = 'https://image.pollinations.ai/p/';
+
+  // UI / Animation Configuration
+  static const int sceneDurationSeconds = 6;
+  static const double defaultCharacterSize = 250.0;
 }
