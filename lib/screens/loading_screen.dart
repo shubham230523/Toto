@@ -45,6 +45,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
       final List<String> bgPaths = [];
       final List<String> audioPaths = [];
+      final List<List<String>> overlayPaths = [];
 
       for (int i = 0; i < script.scenes.length; i++) {
         final scene = script.scenes[i];
@@ -53,12 +54,23 @@ class _LoadingScreenState extends State<LoadingScreen> {
           _progress = 0.4 + (0.5 * (i / script.scenes.length));
         });
 
-        // Download Background
+        // 1. Download Background
         final bgPath = await _cacheService.getImageUrl(scene.backgroundPrompt);
         bgPaths.add(bgPath);
 
-        // Generate Speech
-        final audioPath = await _ttsService.generateSpeech(scene.speechText, 'scene_$i');
+        // 2. Download Overlays (Characters/Objects)
+        final List<String> currentSceneOverlays = [];
+        for (final overlay in scene.overlays) {
+          final path = await _cacheService.getImageUrl(overlay.prompt);
+          currentSceneOverlays.add(path);
+        }
+        overlayPaths.add(currentSceneOverlays);
+
+        // 3. Generate Speech with unique filename based on text hash to avoid stale cache hits
+        final audioPath = await _ttsService.generateSpeech(
+          scene.speechText, 
+          'audio_${scene.speechText.hashCode}'
+        );
         audioPaths.add(audioPath);
       }
 
@@ -75,6 +87,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
               script: script,
               backgroundPaths: bgPaths,
               audioPaths: audioPaths,
+              overlayPaths: overlayPaths,
             ),
           ),
         );
@@ -90,6 +103,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isError = _status.startsWith('Error');
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -98,15 +113,34 @@ class _LoadingScreenState extends State<LoadingScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(),
+                if (!isError)
+                  const CircularProgressIndicator()
+                else
+                  const Icon(Icons.error_outline, color: Colors.red, size: 64),
                 const SizedBox(height: 32),
                 Text(
                   _status,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 18),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: isError ? Colors.redAccent : Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                LinearProgressIndicator(value: _progress),
+                if (!isError)
+                  LinearProgressIndicator(value: _progress)
+                else
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _status = 'Restarting...';
+                        _progress = 0.1;
+                      });
+                      _startGeneration();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Try Again'),
+                  ),
               ],
             ),
           ),

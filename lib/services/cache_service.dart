@@ -36,14 +36,36 @@ class CacheService {
     final url = Uri.parse('${AppConstants.pollinationsBaseUrl}$encodedPrompt?width=1024&height=1024&nologo=true&model=flux');
 
     try {
-      final response = await _client.get(url).timeout(const Duration(minutes: 2));
-      if (response.statusCode == 200) {
-        await file.writeAsBytes(response.bodyBytes);
-        debugPrint('[CacheService] ✅ Successfully cached: $fileName');
-        return filePath;
-      } else {
-        throw Exception('Failed to download image: ${response.statusCode}');
+      // Implement simple retry logic for transient server errors (like 500)
+      http.Response? response;
+      int retryCount = 0;
+      const int maxRetries = 3;
+
+      while (retryCount < maxRetries) {
+        try {
+          response = await _client.get(url).timeout(const Duration(minutes: 2));
+          if (response.statusCode == 200) {
+            await file.writeAsBytes(response.bodyBytes);
+            debugPrint('[CacheService] ✅ Successfully cached: $fileName');
+            return filePath;
+          } else if (response.statusCode >= 500) {
+            // Server error, try again
+            retryCount++;
+            debugPrint('[CacheService] ⚠️ Server error ${response.statusCode}. Retrying ($retryCount/$maxRetries)...');
+            await Future.delayed(Duration(seconds: 2 * retryCount));
+          } else {
+            // Other error (404, etc), don't retry
+            throw Exception('Failed to download image: ${response.statusCode}');
+          }
+        } on Exception catch (e) {
+          if (retryCount >= maxRetries - 1) rethrow;
+          retryCount++;
+          debugPrint('[CacheService] ⚠️ Connection error: $e. Retrying ($retryCount/$maxRetries)...');
+          await Future.delayed(Duration(seconds: 2 * retryCount));
+        }
       }
+
+      throw Exception('Failed to download image after $maxRetries retries');
     } catch (e) {
       debugPrint('[CacheService] 🚨 Error fetching image: $e');
       rethrow;

@@ -18,8 +18,12 @@ class _WizardScreenState extends State<WizardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create your Story'),
+        title: const Padding(
+          padding: EdgeInsets.only(top: 20.0),
+          child: Text('Create your Story'),
+        ),
         centerTitle: true,
+        toolbarHeight: 80,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
