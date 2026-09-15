@@ -38,8 +38,11 @@ class ExportService {
         final bg = backgroundPaths[i];
         final audio = audioPaths[i];
 
-        // Standard command: loop image + add audio. Shortest flag stops when audio ends.
-        final command = '-loop 1 -i "$bg" -i "$audio" -c:v libx264 -tune stillimage -vf "format=yuv420p" -c:a aac -shortest -y "$clipPath"';
+        // Improved FFmpeg command:
+        // 1. Scales the 1:1 image to fit the 1080x1920 vertical canvas
+        // 2. Adds black padding (letterboxing) to ensure the full square image is visible
+        // 3. Sets pixel format for maximum compatibility
+        final command = '-loop 1 -i "$bg" -i "$audio" -c:v libx264 -tune stillimage -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -c:a aac -shortest -y "$clipPath"';
         
         debugPrint('[ExportService] ⚙️ Encoding sub-clip $i...');
         final session = await FFmpegKit.execute(command);

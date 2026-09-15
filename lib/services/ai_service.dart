@@ -52,10 +52,13 @@ $prompt
 
 CRITICAL INSTRUCTIONS:
 1. Return ONLY valid JSON matching this schema: ${json.encode(jsonSchema)}. No markdown.
-2. Each "visualPrompt" MUST be a detailed description of a single illustration that includes both the background and the characters.
-3. ART STYLE RULE: Use "Vibrant 2D vector cartoon, children's storybook style, thick clean outlines, bright cheerful colors, soft lighting, toddler-friendly, cute and adorable characters, no realistic features, no scary elements, high resolution".
-4. Ensure characters like "Toto the Turtle" look friendly and identifiable in every scene.
-5. Characters MUST be interacting with the environment to look merged.
+2. TOTAL DURATION: The story MUST be exactly 1 minute (60 seconds) long.
+3. SCENES: Provide exactly 10 scenes, each around 6 seconds long.
+4. Each "visualPrompt" MUST be a detailed description of a single illustration that includes both the background and the characters.
+5. ART STYLE RULE: Use "Vibrant 2D vector cartoon, children's storybook style, thick clean outlines, bright cheerful colors, soft lighting, toddler-friendly, cute and adorable characters, no realistic features, no scary elements, high resolution".
+6. COMPOSITION: Use "Wide shot, characters centered, plenty of background visible" in every prompt to ensure characters are not cropped on mobile screens.
+7. Ensure characters like "Toto the Turtle" look friendly and identifiable in every scene.
+8. Characters MUST be interacting with the environment to look merged.
 ''';
 
     try {

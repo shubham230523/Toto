@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -154,13 +155,33 @@ class _PlayerScreenState extends State<PlayerScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 1. Background Layer (Cohesive scene including characters)
+          // 1a. Blurred Background Layer (to fill vertical space)
           Positioned.fill(
             child: Image.file(
               File(bgPath),
               fit: BoxFit.cover,
-            ).animate(key: ValueKey('bg_$_currentSceneIndex'))
-             .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.1, 1.1), duration: scene.duration.seconds),
+            ).animate(key: ValueKey('bg_blur_$_currentSceneIndex'))
+             .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.05, 1.05), duration: scene.duration.seconds),
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(color: Colors.black.withAlpha(50)),
+            ),
+          ),
+
+          // 1b. Main Focused Content Layer (Cohesive scene including characters)
+          Positioned.fill(
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: 1.0, // Pollinations is 1:1
+                child: Image.file(
+                  File(bgPath),
+                  fit: BoxFit.contain,
+                ).animate(key: ValueKey('bg_$_currentSceneIndex'))
+                 .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.05, 1.05), duration: scene.duration.seconds),
+              ),
+            ),
           ),
 
           // 2. UI Layer
@@ -194,7 +215,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       constraints: const BoxConstraints(maxWidth: 280),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.black.withAlpha(90), // Increased transparency (approx 35% opacity)
+                        color: Colors.black.withAlpha(120), // Increased readability on blurred bg
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -216,11 +237,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         children: [
                           Text(
                             _formatDuration(_position),
-                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                           Text(
                             _formatDuration(_duration),
-                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                         ],
                       ),
