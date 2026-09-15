@@ -20,6 +20,9 @@ dependencies:
   audioplayers: ^6.1.0
   flutter_animate: ^4.5.0
   ffmpeg_kit_flutter_new: ^4.6.2
+  gal: ^2.3.3
+  intl: ^0.19.0
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:

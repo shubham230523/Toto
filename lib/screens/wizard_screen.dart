@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/constants.dart';
 import '../models/story_config.dart';
 import 'loading_screen.dart';
+import 'history_screen.dart';
 
 class WizardScreen extends StatefulWidget {
   const WizardScreen({super.key});
@@ -22,6 +23,18 @@ class _WizardScreenState extends State<WizardScreen> {
           padding: EdgeInsets.only(top: 20.0),
           child: Text('Create your Story'),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20.0, right: 10.0),
+            child: IconButton(
+              icon: const Icon(Icons.history, size: 28),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
+              ),
+            ),
+          ),
+        ],
         centerTitle: true,
         toolbarHeight: 80,
       ),

@@ -7,7 +7,8 @@ import 'package:path/path.dart' as p;
 
 class TTSService {
   final FlutterTts _nativeTts = FlutterTts();
-  static const String _voice = 'en-US-AvaNeural';
+  // Using 'en-US-AnaNeural' which is a dedicated CHILD voice for a friendlier toddler tone
+  static const String _voice = 'en-US-AnaNeural';
 
   TTSService() {
     _initNative();
@@ -37,8 +38,8 @@ class TTSService {
     }
 
     try {
-      debugPrint('[TTSService] 🎙️ Generating human-like voice using Edge TTS: "$text"');
-      final edge = Communicate(text: text, voice: _voice);
+      debugPrint('[TTSService] 🎙️ Generating toddler-friendly voice using Edge TTS (Ana): "$text"');
+      final edge = Communicate(text: text, voice: _voice, rate: '-10%'); // Slightly slower for better toddler processing
       await edge.save(filePath);
       debugPrint('[TTSService] ✅ Successfully generated: $fileName');
       return filePath;

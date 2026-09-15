@@ -4,16 +4,19 @@ import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:gal/gal.dart';
 import '../models/story_script.dart';
 
 class ExportService {
-  /// Compiles a list of image and audio file paths into a single MP4 video.
+  /// Compiles a list of image and audio file paths into a single MP4 video
+  /// and saves it to the system gallery.
   Future<String> exportVideo(
     StoryScript script,
     List<String> backgroundPaths,
     List<String> audioPaths,
     String outputFileName,
   ) async {
+    // 1. Determine temporary internal directory for rendering
     final directory = await getApplicationDocumentsDirectory();
     final exportDir = Directory(p.join(directory.path, 'exports'));
     if (!await exportDir.exists()) {
@@ -51,19 +54,25 @@ class ExportService {
         }
       }
 
-      // Create concat list
+      // 2. Create concat list
       final listFile = File(p.join(tempDir.path, 'clips.txt'));
       final content = clipPaths.map((path) => "file '$path'").join('\n');
       await listFile.writeAsString(content);
 
-      // Concat all clips into final video
+      // 3. Concat all clips into final video
       debugPrint('[ExportService] 🖇️ Concatenating all sub-clips into final container...');
       final concatCommand = '-f concat -safe 0 -i "${listFile.path}" -c copy -y "$outputPath"';
       final finalSession = await FFmpegKit.execute(concatCommand);
       final finalReturnCode = await finalSession.getReturnCode();
 
       if (ReturnCode.isSuccess(finalReturnCode)) {
-        debugPrint('[ExportService] 🎉 Successfully exported video to: $outputPath');
+        debugPrint('[ExportService] 🎉 Successfully exported video locally: $outputPath');
+        
+        // 4. Save to System Gallery using Gal
+        debugPrint('[ExportService] 📁 Saving to System Gallery...');
+        await Gal.putVideo(outputPath, album: 'Toto');
+        debugPrint('[ExportService] ✅ Video available in System Gallery.');
+        
         return outputPath;
       } else {
         final logs = await finalSession.getLogsAsString();
@@ -71,7 +80,7 @@ class ExportService {
         throw Exception('FFmpeg final export failed');
       }
     } finally {
-      // Cleanup temp clips handled by system/manual if needed
+      if (await tempDir.exists()) await tempDir.delete(recursive: true);
     }
   }
 }

@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../models/story_script.dart';
+import '../models/history_item.dart';
 import '../services/export_service.dart';
+import '../services/history_service.dart';
+import 'package:uuid/uuid.dart';
 
 class PlayerScreen extends StatefulWidget {
   final StoryScript script;
@@ -102,9 +105,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
         widget.audioPaths,
         'story_${DateTime.now().millisecondsSinceEpoch}',
       );
+
+      // Add to local history
+      final historyItem = HistoryItem(
+        id: const Uuid().v4(),
+        title: widget.script.title,
+        filePath: path,
+        createdAt: DateTime.now(),
+      );
+      await historyService.addToHistory(historyItem);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Video exported to: $path')),
+          SnackBar(content: Text('Story saved to Gallery and History!')),
         );
       }
     } catch (e) {
