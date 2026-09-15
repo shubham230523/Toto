@@ -19,7 +19,7 @@ dependencies:
   edge_tts: ^0.1.5
   audioplayers: ^6.1.0
   flutter_animate: ^4.5.0
-  ffmpeg_kit_flutter_video: ^6.0.3
+  ffmpeg_kit_flutter_new: ^4.6.2
 
 dev_dependencies:
   flutter_test:

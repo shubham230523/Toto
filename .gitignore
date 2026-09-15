@@ -66,4 +66,6 @@ render-service/*.txt
 renderer/godot_*.txt
 accept.bat
 yes.txt
+secrets.json
+
 

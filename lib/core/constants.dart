@@ -2,9 +2,9 @@ class AppConstants {
   static const String appName = 'Toto';
 
   // AI Configuration
-  // TODO: Replace with your actual Gemini API Key from Google AI Studio
-  static const String geminiApiKey = 'YOUR_GEMINI_API_KEY_HERE';
-  static const String geminiModel = 'gemini-1.5-flash';
+  // Gemini API Key is injected via --dart-define-from-file=secrets.json
+  static const String geminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
+  static const String geminiModel = 'gemini-3.5-flash-lite';
 
   // Story Configuration Presets
   static const List<String> storyTypes = [

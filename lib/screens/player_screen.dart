@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -27,30 +28,69 @@ class _PlayerScreenState extends State<PlayerScreen> {
   
   int _currentSceneIndex = 0;
   bool _isExporting = false;
+  bool _isFinished = false;
+  bool _isPlaying = true;
+
+  Duration _position = Duration.zero;
+  Duration _duration = Duration.zero;
+
+  StreamSubscription? _posSub;
+  StreamSubscription? _durSub;
+  StreamSubscription? _compSub;
 
   @override
   void initState() {
     super.initState();
+    _setupAudioListeners();
     _playScene(0);
   }
 
+  void _setupAudioListeners() {
+    _posSub = _audioPlayer.onPositionChanged.listen((p) {
+      if (mounted) setState(() => _position = p);
+    });
+    _durSub = _audioPlayer.onDurationChanged.listen((d) {
+      if (mounted) setState(() => _duration = d);
+    });
+    _compSub = _audioPlayer.onPlayerComplete.listen((_) {
+      if (mounted) {
+        if (_currentSceneIndex < widget.script.scenes.length - 1) {
+          _playScene(_currentSceneIndex + 1);
+        } else {
+          setState(() {
+            _isFinished = true;
+            _isPlaying = false;
+          });
+          debugPrint('[PlayerScreen] Story finished.');
+        }
+      }
+    });
+  }
+
   Future<void> _playScene(int index) async {
-    if (index >= widget.script.scenes.length) {
-      debugPrint('[PlayerScreen] Story finished.');
+    setState(() {
+      _currentSceneIndex = index;
+      _isFinished = false;
+      _isPlaying = true;
+      _position = Duration.zero;
+      _duration = Duration.zero;
+    });
+
+    await _audioPlayer.play(DeviceFileSource(widget.audioPaths[index]));
+  }
+
+  void _togglePlayPause() {
+    if (_isFinished) {
+      _playScene(0);
       return;
     }
 
-    setState(() => _currentSceneIndex = index);
-
-    // Play Audio
-    await _audioPlayer.play(DeviceFileSource(widget.audioPaths[index]));
-
-    // Wait for audio to finish before next scene
-    _audioPlayer.onPlayerComplete.first.then((_) {
-      if (mounted) {
-        _playScene(index + 1);
-      }
-    });
+    if (_isPlaying) {
+      _audioPlayer.pause();
+    } else {
+      _audioPlayer.resume();
+    }
+    setState(() => _isPlaying = !_isPlaying);
   }
 
   Future<void> _exportVideo() async {
@@ -79,6 +119,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   @override
   void dispose() {
+    _posSub?.cancel();
+    _durSub?.cancel();
+    _compSub?.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -88,11 +131,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final scene = widget.script.scenes[_currentSceneIndex];
     final bgPath = widget.backgroundPaths[_currentSceneIndex];
 
+    double progress = 0.0;
+    if (_duration.inMilliseconds > 0) {
+      progress = _position.inMilliseconds / _duration.inMilliseconds;
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Background Layer
+          // Background Layer (Full bleed)
           Positioned.fill(
             child: Image.file(
               File(bgPath),
@@ -101,40 +149,71 @@ class _PlayerScreenState extends State<PlayerScreen> {
              .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.1, 1.1), duration: scene.duration.seconds),
           ),
 
-          // Subtitles Layer
-          Positioned(
-            bottom: 60,
-            left: 32,
-            right: 32,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              color: Colors.black54,
-              child: Text(
-                scene.speechText,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-              ).animate(key: ValueKey('text_$_currentSceneIndex')).fadeIn().slideY(begin: 0.1, end: 0),
-            ),
-          ),
+          // Content Layer (SafeArea for HUD and Text)
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+              child: Column(
+                children: [
+                  // Top Controls
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white, size: 32),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      IconButton(
+                        icon: _isExporting 
+                          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          : const Icon(Icons.download, color: Colors.white, size: 32),
+                        onPressed: _isExporting ? null : _exportVideo,
+                      ),
+                    ],
+                  ),
+                  
+                  const Spacer(),
 
-          // Export HUD
-          Positioned(
-            top: 40,
-            right: 20,
-            child: IconButton(
-              icon: _isExporting 
-                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.download, color: Colors.white, size: 32),
-              onPressed: _isExporting ? null : _exportVideo,
-            ),
-          ),
-          
-          Positioned(
-            top: 40,
-            left: 20,
-            child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white, size: 32),
-              onPressed: () => Navigator.pop(context),
+                  // Subtitles
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      scene.speechText,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    ).animate(key: ValueKey('text_$_currentSceneIndex')).fadeIn().slideY(begin: 0.1, end: 0),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Progress Bar & Play/Pause
+                  Column(
+                    children: [
+                      LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.white24,
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
+                        minHeight: 4,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      const SizedBox(height: 8),
+                      IconButton(
+                        icon: Icon(
+                          _isFinished ? Icons.replay : (_isPlaying ? Icons.pause : Icons.play_arrow),
+                          color: Colors.white,
+                          size: 48,
+                        ),
+                        onPressed: _togglePlayPause,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],

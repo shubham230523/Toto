@@ -20,60 +20,63 @@ class AIService {
   }
 
   Future<StoryScript> generateStory(StoryConfig config) async {
-    final prompt = _buildPrompt(config);
-    debugPrint('[AIService] 🛫 Sending generation request to Gemini...');
+    debugPrint('[AIService] 🛫 Sending production-spec generation request to Gemini...');
 
-    final content = [Content.text(prompt)];
-    final response = await _model.generateContent(content);
+    final messages = [
+      {'role': 'system', 'content': 'Generate a short story for a video.'},
+      {'role': 'user', 'content': 'Story Type: ${config.storyType}. Characters: ${config.characters.join(', ')}'}
+    ];
 
-    if (response.text == null) {
-      throw Exception('Gemini returned an empty response.');
-    }
-
-    try {
-      final json = jsonDecode(response.text!) as Map<String, dynamic>;
-      debugPrint('[AIService] 🛬 Successfully received structured script.');
-      return StoryScript.fromJson(json);
-    } catch (e) {
-      debugPrint('[AIService] ❌ Failed to parse Gemini response: $e');
-      debugPrint('[AIService] Raw response: ${response.text}');
-      throw Exception('Failed to parse story script: $e');
-    }
-  }
-
-  String _buildPrompt(StoryConfig config) {
-    return '''
-    Generate a short story for a video.
-    Story Type: ${config.storyType}
-    Characters: ${config.characters.join(', ')}
-
-    Return a JSON object with the following structure:
-    {
-      "title": "Title of the story",
+    // Replicate production prompt construction: messages mapped to [ROLE] headers joined by double newlines
+    final prompt = messages.map((m) => '[${m['role']!.toUpperCase()}]: ${m['content']}').join('\n\n');
+    
+    const jsonSchema = {
+      "title": "string",
       "scenes": [
         {
-          "index": 1,
-          "duration": 6.0,
-          "backgroundPrompt": "Description for image generation (Pollinations AI)",
-          "speechText": "The text to be spoken by narrator",
+          "index": "number",
+          "duration": "number",
+          "backgroundPrompt": "string",
+          "speechText": "string",
           "overlays": [
             {
-              "type": "character",
-              "prompt": "Specific description of the character for this scene",
-              "animationPreset": "bounce_in",
-              "position": "bottom_left"
+              "type": "string",
+              "prompt": "string",
+              "animationPreset": "string",
+              "position": "string"
             }
           ]
         }
       ]
-    }
+    };
 
-    Rules:
-    - Keep it simple and engaging.
-    - Provide at least 5 scenes.
-    - backgroundPrompt should be descriptive and style-consistent.
-    - animationPreset options: bounce_in, slide_in, float_idle, fade_in.
-    - position options: bottom_left, bottom_right, center, top_left, top_right.
-    ''';
+    // Replicate production CRITICAL instruction for JSON schema enforcement
+    final finalPrompt = '''
+$prompt
+
+CRITICAL: Return ONLY valid JSON matching this schema: ${json.encode(jsonSchema)}. No markdown.
+''';
+
+    try {
+      final content = [Content.text(finalPrompt)];
+      final response = await _model.generateContent(content);
+
+      if (response.text == null) {
+        throw Exception('Gemini returned an empty response.');
+      }
+
+      final text = response.text!.trim();
+      
+      // Replicate production JSON extraction logic using regex
+      final jsonMatch = RegExp(r'(\{[\s\S]*\}|\[[\s\S]*\])').firstMatch(text);
+      final rawJson = jsonMatch != null ? jsonMatch.group(0)! : text;
+
+      final parsedJson = jsonDecode(rawJson) as Map<String, dynamic>;
+      debugPrint('[AIService] 🛬 Successfully received and parsed structured script.');
+      return StoryScript.fromJson(parsedJson);
+    } catch (e) {
+      debugPrint('[AIService] ❌ Error during Gemini generation: $e');
+      rethrow;
+    }
   }
 }

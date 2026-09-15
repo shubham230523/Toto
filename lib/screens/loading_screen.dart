@@ -91,22 +91,24 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 48.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: 32),
-              Text(
-                _status,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 16),
-              LinearProgressIndicator(value: _progress),
-            ],
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 32),
+                Text(
+                  _status,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                ),
+                const SizedBox(height: 16),
+                LinearProgressIndicator(value: _progress),
+              ],
+            ),
           ),
         ),
       ),

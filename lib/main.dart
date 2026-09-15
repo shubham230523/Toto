@@ -5,15 +5,14 @@ import 'app.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Configure immersive fullscreen mode globally
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  // Configure edge-to-edge mode to show status and nav bars while allowing content to draw behind them
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   
-  // iOS-specific: Auto-hide the home indicator for an immersive experience
-  // SystemChrome.setPrefersHomeIndicatorAutoHidden(true);
-
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light, // White icons for dark theme
+    systemNavigationBarIconBrightness: Brightness.light,
   ));
   
   runApp(const TotoApp());
