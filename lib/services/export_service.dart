@@ -8,15 +8,13 @@ import 'package:gal/gal.dart';
 import '../models/story_script.dart';
 
 class ExportService {
-  /// Compiles a list of image and audio file paths into a single MP4 video
-  /// and saves it to the system gallery.
+  /// Compiles 10 scenes into a single 1-minute MP4 video and saves to gallery.
   Future<String> exportVideo(
     StoryScript script,
     List<String> backgroundPaths,
     List<String> audioPaths,
     String outputFileName,
   ) async {
-    // 1. Determine temporary internal directory for rendering
     final directory = await getApplicationDocumentsDirectory();
     final exportDir = Directory(p.join(directory.path, 'exports'));
     if (!await exportDir.exists()) {
@@ -28,23 +26,25 @@ class ExportService {
     if (await tempDir.exists()) await tempDir.delete(recursive: true);
     await tempDir.create(recursive: true);
 
-    debugPrint('[ExportService] 📽️ Starting FFmpeg multi-stage render pipeline...');
+    debugPrint('[ExportService] 📽️ Starting 1-minute multi-stage render pipeline...');
 
     try {
       final List<String> clipPaths = [];
       for (int i = 0; i < script.scenes.length; i++) {
+        final scene = script.scenes[i];
         final clipPath = p.join(tempDir.path, 'clip_$i.mp4');
         
         final bg = backgroundPaths[i];
         final audio = audioPaths[i];
+        final bgColor = scene.backgroundColor.replaceAll('#', '0x');
 
-        // Improved FFmpeg command:
-        // 1. Scales the 1:1 image to fit the 1080x1920 vertical canvas
-        // 2. Adds black padding (letterboxing) to ensure the full square image is visible
-        // 3. Sets pixel format for maximum compatibility
-        final command = '-loop 1 -i "$bg" -i "$audio" -c:v libx264 -tune stillimage -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -c:a aac -shortest -y "$clipPath"';
+        // FFmpeg Command:
+        // 1. Scales image to 1280x720 (16:9)
+        // 2. Pads with the dominant background color from AI
+        // 3. Merges audio and video into a sub-clip
+        final command = '-loop 1 -i "$bg" -i "$audio" -c:v libx264 -tune stillimage -vf "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:color=$bgColor,format=yuv420p" -c:a aac -shortest -y "$clipPath"';
         
-        debugPrint('[ExportService] ⚙️ Encoding sub-clip $i...');
+        debugPrint('[ExportService] ⚙️ Encoding sub-clip $i/10...');
         final session = await FFmpegKit.execute(command);
         final returnCode = await session.getReturnCode();
 
@@ -57,30 +57,29 @@ class ExportService {
         }
       }
 
-      // 2. Create concat list
+      // 2. Create absolute path concat list
       final listFile = File(p.join(tempDir.path, 'clips.txt'));
       final content = clipPaths.map((path) => "file '$path'").join('\n');
       await listFile.writeAsString(content);
 
-      // 3. Concat all clips into final video
-      debugPrint('[ExportService] 🖇️ Concatenating all sub-clips into final container...');
+      // 3. Concat all 10 clips into final 1-minute video
+      debugPrint('[ExportService] 🖇️ Merging all clips into final 1-minute container...');
       final concatCommand = '-f concat -safe 0 -i "${listFile.path}" -c copy -y "$outputPath"';
       final finalSession = await FFmpegKit.execute(concatCommand);
       final finalReturnCode = await finalSession.getReturnCode();
 
       if (ReturnCode.isSuccess(finalReturnCode)) {
-        debugPrint('[ExportService] 🎉 Successfully exported video locally: $outputPath');
+        debugPrint('[ExportService] 🎉 Successfully exported full video: $outputPath');
         
-        // 4. Save to System Gallery using Gal
-        debugPrint('[ExportService] 📁 Saving to System Gallery...');
+        // 4. Save to System Gallery
         await Gal.putVideo(outputPath, album: 'Toto');
-        debugPrint('[ExportService] ✅ Video available in System Gallery.');
+        debugPrint('[ExportService] ✅ Video saved to System Gallery.');
         
         return outputPath;
       } else {
         final logs = await finalSession.getLogsAsString();
-        debugPrint('[ExportService] ❌ Final concatenation failed: $logs');
-        throw Exception('FFmpeg final export failed');
+        debugPrint('[ExportService] ❌ Final merge failed: $logs');
+        throw Exception('FFmpeg final merge failed');
       }
     } finally {
       if (await tempDir.exists()) await tempDir.delete(recursive: true);

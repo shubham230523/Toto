@@ -42,7 +42,8 @@ class AIService {
           "index": "number",
           "duration": "number",
           "visualPrompt": "string",
-          "speechText": "string"
+          "speechText": "string",
+          "backgroundColor": "string (hex code)"
         }
       ]
     };
@@ -55,10 +56,10 @@ CRITICAL INSTRUCTIONS:
 2. TOTAL DURATION: The story MUST be exactly 1 minute (60 seconds) long.
 3. SCENES: Provide exactly 10 scenes, each around 6 seconds long.
 4. Each "visualPrompt" MUST be a detailed description of a single illustration that includes both the background and the characters.
-5. ART STYLE RULE: Use "Vibrant 2D vector cartoon, children's storybook style, thick clean outlines, bright cheerful colors, soft lighting, toddler-friendly, cute and adorable characters, no realistic features, no scary elements, high resolution".
-6. COMPOSITION: Use "Wide shot, characters centered, plenty of background visible" in every prompt to ensure characters are not cropped on mobile screens.
-7. Ensure characters like "Toto the Turtle" look friendly and identifiable in every scene.
-8. Characters MUST be interacting with the environment to look merged.
+5. ART STYLE RULE: Use "Vibrant 2D vector cartoon, children's storybook style, thick clean outlines, bright cheerful colors, soft lighting, high resolution, 16:9 aspect ratio, wide cinematic landscape".
+6. COMPOSITION: Use "Wide shot, cinematic landscape orientation, 16:9 scale" in every prompt to ensure characters are not cropped.
+7. Characters MUST be interacting with the environment to look merged.
+8. BACKGROUND COLOR: Provide a hex code (e.g. #76B947) for "backgroundColor" that matches the dominant color of the scene background.
 ''';
 
     try {

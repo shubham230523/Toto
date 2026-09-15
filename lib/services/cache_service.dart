@@ -35,7 +35,8 @@ class CacheService {
     final encodedPrompt = Uri.encodeComponent(prompt);
     
     // Add quality modifiers: enhance=true for better details, and specific model settings
-    String urlStr = '${AppConstants.pollinationsBaseUrl}$encodedPrompt?width=1024&height=1024&nologo=true&model=flux&enhance=true&seed=${DateTime.now().millisecond}';
+    // Updated to 1280x720 (16:9) for landscape mode
+    String urlStr = '${AppConstants.pollinationsBaseUrl}$encodedPrompt?width=1280&height=720&nologo=true&model=flux&enhance=true&seed=${DateTime.now().millisecond}';
     if (isTransparent) {
       urlStr += '&transparent=true';
     }

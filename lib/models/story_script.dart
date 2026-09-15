@@ -27,12 +27,14 @@ class Scene {
   final double duration;
   final String visualPrompt;
   final String speechText;
+  final String backgroundColor; // Hex code for matching background
 
   Scene({
     required this.index,
     required this.duration,
     required this.visualPrompt,
     required this.speechText,
+    required this.backgroundColor,
   });
 
   factory Scene.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class Scene {
       duration: (json['duration'] as num).toDouble(),
       visualPrompt: (json['visualPrompt'] ?? json['backgroundPrompt'] ?? '') as String,
       speechText: json['speechText'] as String,
+      backgroundColor: (json['backgroundColor'] ?? '#000000') as String,
     );
   }
 
@@ -49,5 +52,6 @@ class Scene {
         'duration': duration,
         'visualPrompt': visualPrompt,
         'speechText': speechText,
+        'backgroundColor': backgroundColor,
       };
 }

@@ -7,8 +7,6 @@ import 'package:path/path.dart' as p;
 
 class TTSService {
   final FlutterTts _nativeTts = FlutterTts();
-  // Using 'en-US-AnaNeural' which is a dedicated CHILD voice for a friendlier toddler tone
-  static const String _voice = 'en-US-AnaNeural';
 
   TTSService() {
     _initNative();
@@ -22,38 +20,41 @@ class TTSService {
   }
 
   /// Generates speech for the given text and returns the file path.
-  Future<String> generateSpeech(String text, String fileName) async {
+  Future<String> generateSpeech(String text, String fileName, {bool isChild = true}) async {
     final directory = await getApplicationDocumentsDirectory();
     final ttsDir = Directory(p.join(directory.path, 'tts_cache'));
     if (!await ttsDir.exists()) {
       await ttsDir.create(recursive: true);
     }
 
-    final filePath = p.join(ttsDir.path, '$fileName.mp3');
+    // Include voice type in filename to avoid cache collision between child/adult
+    final finalFileName = '${fileName}_${isChild ? 'child' : 'adult'}';
+    final filePath = p.join(ttsDir.path, '$finalFileName.mp3');
     final file = File(filePath);
 
     if (await file.exists()) {
-      debugPrint('[TTSService] 📦 Cache HIT: $fileName');
+      debugPrint('[TTSService] 📦 Cache HIT: $finalFileName');
       return filePath;
     }
 
     try {
-      debugPrint('[TTSService] 🎙️ Generating toddler-friendly voice using Edge TTS (Ana): "$text"');
-      final edge = Communicate(text: text, voice: _voice, rate: '-10%'); // Slightly slower for better toddler processing
+      final voice = isChild ? 'en-US-AnaNeural' : 'en-US-AndrewNeural';
+      debugPrint('[TTSService] 🎙️ Generating ${isChild ? 'child' : 'adult'} voice using Edge TTS ($voice): "$text"');
+      
+      final edge = Communicate(
+        text: text, 
+        voice: voice, 
+        rate: isChild ? '-10%' : '+0%',
+      );
+      
       await edge.save(filePath);
-      debugPrint('[TTSService] ✅ Successfully generated: $fileName');
+      debugPrint('[TTSService] ✅ Successfully generated: $finalFileName');
       return filePath;
     } catch (e) {
       debugPrint('[TTSService] ⚠️ Edge TTS failed, falling back to native TTS: $e');
-      // Native TTS usually speaks directly, but some versions support saving to file.
-      // For this flow, we'll try to save to file if supported, or just log error for now.
-      // Most mobile native TTS can synthesize to file.
       try {
         if (Platform.isAndroid || Platform.isIOS) {
-          await _nativeTts.synthesizeToFile(text, '$fileName.mp3');
-          // Note: synthesizeToFile behavior varies by platform. 
-          // On Android, it saves to the path provided relative to external storage or absolute.
-          // We'll assume for now we need a working audio file for FFmpeg.
+          await _nativeTts.synthesizeToFile(text, '$finalFileName.mp3');
           return filePath; 
         }
       } catch (nativeError) {

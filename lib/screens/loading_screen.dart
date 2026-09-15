@@ -58,9 +58,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
         bgPaths.add(bgPath);
 
         // 2. Generate Speech
+        final bool isChild = widget.config.storyType == 'Child Story';
         final audioPath = await _ttsService.generateSpeech(
           scene.speechText, 
-          'audio_${scene.speechText.hashCode}'
+          'audio_${scene.speechText.hashCode}',
+          isChild: isChild,
         );
         audioPaths.add(audioPath);
       }

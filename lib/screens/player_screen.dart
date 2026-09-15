@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -45,6 +46,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
+    // Lock orientation to landscape for immersive storytelling
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     _setupAudioListeners();
     _playScene(0);
   }
@@ -118,7 +124,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Story saved to Gallery and History!')),
+          const SnackBar(content: Text('Story saved to Gallery and History!')),
         );
       }
     } catch (e) {
@@ -134,6 +140,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   @override
   void dispose() {
+    // Reset orientation to system default
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     _posSub?.cancel();
     _durSub?.cancel();
     _compSub?.cancel();
@@ -141,10 +154,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
     super.dispose();
   }
 
+  Color _hexToColor(String code) {
+    try {
+      return Color(int.parse(code.replaceAll('#', '0xFF')));
+    } catch (e) {
+      return Colors.black;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final scene = widget.script.scenes[_currentSceneIndex];
     final bgPath = widget.backgroundPaths[_currentSceneIndex];
+    final Color bgColor = _hexToColor(scene.backgroundColor);
 
     double progress = 0.0;
     if (_duration.inMilliseconds > 0) {
@@ -152,29 +174,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: bgColor,
       body: Stack(
         children: [
-          // 1a. Blurred Background Layer (to fill vertical space)
-          Positioned.fill(
-            child: Image.file(
-              File(bgPath),
-              fit: BoxFit.cover,
-            ).animate(key: ValueKey('bg_blur_$_currentSceneIndex'))
-             .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.05, 1.05), duration: scene.duration.seconds),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Container(color: Colors.black.withAlpha(50)),
-            ),
-          ),
-
-          // 1b. Main Focused Content Layer (Cohesive scene including characters)
+          // 1. Main Focused Content Layer (16:9 illustration)
           Positioned.fill(
             child: Center(
               child: AspectRatio(
-                aspectRatio: 1.0, // Pollinations is 1:1
+                aspectRatio: 16 / 9,
                 child: Image.file(
                   File(bgPath),
                   fit: BoxFit.contain,
@@ -212,16 +219,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   // Subtitles - Compact and more transparent
                   Center(
                     child: Container(
-                      constraints: const BoxConstraints(maxWidth: 280),
+                      constraints: const BoxConstraints(maxWidth: 400),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.black.withAlpha(120), // Increased readability on blurred bg
+                        color: Colors.black.withValues(alpha: 0.35),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         scene.speechText,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                        style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                       ).animate(key: ValueKey('text_$_currentSceneIndex')).fadeIn().slideY(begin: -0.1, end: 0),
                     ),
                   ),
