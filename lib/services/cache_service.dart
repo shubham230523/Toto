@@ -13,8 +13,8 @@ class CacheService {
   CacheService({http.Client? client}) : _client = client ?? http.Client();
 
   /// Gets a cached image for the given prompt or downloads it.
-  Future<String> getImageUrl(String prompt) async {
-    final fileName = _generateFileName(prompt);
+  Future<String> getImageUrl(String prompt, {bool isTransparent = false}) async {
+    final fileName = _generateFileName('$prompt${isTransparent ? '_trans' : ''}');
     final directory = await getApplicationDocumentsDirectory();
     final cacheDir = Directory(p.join(directory.path, 'assets_cache'));
     
@@ -22,7 +22,8 @@ class CacheService {
       await cacheDir.create(recursive: true);
     }
 
-    final filePath = p.join(cacheDir.path, '$fileName.jpg');
+    final extension = isTransparent ? 'png' : 'jpg';
+    final filePath = p.join(cacheDir.path, '$fileName.$extension');
     final file = File(filePath);
 
     if (await file.exists()) {
@@ -30,10 +31,14 @@ class CacheService {
       return filePath;
     }
 
-    debugPrint('[CacheService] 🔍 Cache MISS: Downloading image for prompt: $prompt');
+    debugPrint('[CacheService] 🔍 Cache MISS: Downloading image for prompt: $prompt (Transparent: $isTransparent)');
     final encodedPrompt = Uri.encodeComponent(prompt);
-    // Add default style modifiers from constants if needed, but for now just the prompt
-    final url = Uri.parse('${AppConstants.pollinationsBaseUrl}$encodedPrompt?width=1024&height=1024&nologo=true&model=flux');
+    
+    String urlStr = '${AppConstants.pollinationsBaseUrl}$encodedPrompt?width=1024&height=1024&nologo=true&model=flux';
+    if (isTransparent) {
+      urlStr += '&transparent=true';
+    }
+    final url = Uri.parse(urlStr);
 
     try {
       // Implement simple retry logic for transient server errors (like 500)

@@ -45,7 +45,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
       final List<String> bgPaths = [];
       final List<String> audioPaths = [];
-      final List<List<String>> overlayPaths = [];
 
       for (int i = 0; i < script.scenes.length; i++) {
         final scene = script.scenes[i];
@@ -54,19 +53,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
           _progress = 0.4 + (0.5 * (i / script.scenes.length));
         });
 
-        // 1. Download Background
-        final bgPath = await _cacheService.getImageUrl(scene.backgroundPrompt);
+        // 1. Download Cohesive Scene Image (Characters + Background)
+        final bgPath = await _cacheService.getImageUrl(scene.visualPrompt);
         bgPaths.add(bgPath);
 
-        // 2. Download Overlays (Characters/Objects)
-        final List<String> currentSceneOverlays = [];
-        for (final overlay in scene.overlays) {
-          final path = await _cacheService.getImageUrl(overlay.prompt);
-          currentSceneOverlays.add(path);
-        }
-        overlayPaths.add(currentSceneOverlays);
-
-        // 3. Generate Speech with unique filename based on text hash to avoid stale cache hits
+        // 2. Generate Speech
         final audioPath = await _ttsService.generateSpeech(
           scene.speechText, 
           'audio_${scene.speechText.hashCode}'
@@ -87,7 +78,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
               script: script,
               backgroundPaths: bgPaths,
               audioPaths: audioPaths,
-              overlayPaths: overlayPaths,
             ),
           ),
         );

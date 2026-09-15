@@ -24,23 +24,15 @@ void main() {
           {
             'index': 1,
             'duration': 5.0,
-            'backgroundPrompt': 'A sunny forest',
+            'visualPrompt': 'A sunny forest with a turtle',
             'speechText': 'Hello Toto!',
-            'overlays': [
-              {
-                'type': 'character',
-                'prompt': 'A cute turtle',
-                'animationPreset': 'bounce_in',
-                'position': 'bottom_left'
-              }
-            ]
           }
         ]
       };
       final script = StoryScript.fromJson(json);
       expect(script.title, 'Test Story');
       expect(script.scenes.length, 1);
-      expect(script.scenes[0].overlays[0].type, 'character');
+      expect(script.scenes[0].visualPrompt, 'A sunny forest with a turtle');
       expect(script.toJson(), json);
     });
   });

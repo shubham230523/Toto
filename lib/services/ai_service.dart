@@ -20,14 +20,19 @@ class AIService {
   }
 
   Future<StoryScript> generateStory(StoryConfig config) async {
-    debugPrint('[AIService] 🛫 Sending production-spec generation request to Gemini...');
+    debugPrint('[AIService] 🛫 Sending generation request for a cohesive visual story...');
 
     final messages = [
-      {'role': 'system', 'content': 'Generate a short story for a video.'},
-      {'role': 'user', 'content': 'Story Type: ${config.storyType}. Characters: ${config.characters.join(', ')}'}
+      {
+        'role': 'system', 
+        'content': 'You are a director for a high-quality educational video. Generate a story where each scene is a single, beautiful illustration including the characters.'
+      },
+      {
+        'role': 'user', 
+        'content': 'Story Type: ${config.storyType}. Characters to include: ${config.characters.join(', ')}'
+      }
     ];
 
-    // Replicate production prompt construction: messages mapped to [ROLE] headers joined by double newlines
     final prompt = messages.map((m) => '[${m['role']!.toUpperCase()}]: ${m['content']}').join('\n\n');
     
     const jsonSchema = {
@@ -36,25 +41,20 @@ class AIService {
         {
           "index": "number",
           "duration": "number",
-          "backgroundPrompt": "string",
-          "speechText": "string",
-          "overlays": [
-            {
-              "type": "string",
-              "prompt": "string",
-              "animationPreset": "string",
-              "position": "string"
-            }
-          ]
+          "visualPrompt": "string",
+          "speechText": "string"
         }
       ]
     };
 
-    // Replicate production CRITICAL instruction for JSON schema enforcement
     final finalPrompt = '''
 $prompt
 
-CRITICAL: Return ONLY valid JSON matching this schema: ${json.encode(jsonSchema)}. No markdown.
+CRITICAL INSTRUCTIONS:
+1. Return ONLY valid JSON matching this schema: ${json.encode(jsonSchema)}. No markdown.
+2. Each "visualPrompt" MUST be a detailed description of a single illustration that includes both the background and the characters (e.g., "Toto the turtle and Mimi the rabbit sitting on a log in a sunny forest, vibrant 2D cartoon style").
+3. Ensure the art style description is consistent across all scenes.
+4. Characters MUST be interacting with the environment to look merged.
 ''';
 
     try {
@@ -66,13 +66,11 @@ CRITICAL: Return ONLY valid JSON matching this schema: ${json.encode(jsonSchema)
       }
 
       final text = response.text!.trim();
-      
-      // Replicate production JSON extraction logic using regex
       final jsonMatch = RegExp(r'(\{[\s\S]*\}|\[[\s\S]*\])').firstMatch(text);
       final rawJson = jsonMatch != null ? jsonMatch.group(0)! : text;
 
       final parsedJson = jsonDecode(rawJson) as Map<String, dynamic>;
-      debugPrint('[AIService] 🛬 Successfully received and parsed structured script.');
+      debugPrint('[AIService] 🛬 Successfully received production-spec cohesive script.');
       return StoryScript.fromJson(parsedJson);
     } catch (e) {
       debugPrint('[AIService] ❌ Error during Gemini generation: $e');
