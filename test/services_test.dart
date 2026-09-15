@@ -1,10 +1,7 @@
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:toto/services/cache_service.dart';
-import 'package:path/path.dart' as p;
 
 class MockClient extends Mock implements http.Client {}
 class FakeUri extends Fake implements Uri {}
