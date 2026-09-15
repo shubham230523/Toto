@@ -3,11 +3,14 @@ name: Build & Release Android APK
 on:
   push:
     tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - 'v*' # Trigger on tags like v1.0.0
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    name: Build APK
+    name: Build & Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -28,17 +31,21 @@ jobs:
         run: flutter pub get
 
       - name: Create secrets.json
+        # This reads the APP_SECRETS from GitHub Action Secrets
+        # Format in GitHub Secret should be: {"GEMINI_API_KEY": "AIza..."}
         run: echo '${{ secrets.APP_SECRETS }}' > secrets.json
 
       - name: Build APK
-        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --dart-define-from-file=secrets.json
+        run: |
+          flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols --dart-define-from-file=secrets.json
 
       - name: Rename APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/toto-release-${{ github.ref_name }}.apk
 
-      - name: Create Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: build/app/outputs/flutter-apk/toto-release-${{ github.ref_name }}.apk
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
